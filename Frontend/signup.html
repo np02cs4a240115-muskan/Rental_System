@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background: #fff;
+  padding: 25px;
+  width: 320px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.title {
+  font-weight: bold;
+  color: #5a42e0;
+  margin-bottom: 20px;
+}
+
+.field {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: none;
+  background: #f0f0f0;
+  box-sizing: border-box;
+}
+
+.signup-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to right, #7b61ff, #5a42e0);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.divider {
+  margin: 15px 0;
+  font-size: 12px;
+  color: gray;
+}
+
+.btn-google {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(197, 197, 197, 0.3);
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-google svg {
+  width: 16px;
+  height: 16px;
+}
+
+.footer {
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.footer a {
+  color: #5a42e0;
+  text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title">VroomNepal</div>
+
+  <div class="field">
+    <label>Full Name</label>
+    <input type="text" placeholder="John Doe">
+  </div>
+
+  <div class="field">
+    <label>Phone Number</label>
+    <input type="text" placeholder="+977 9812345678">
+  </div>
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" placeholder="example@email.com">
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <input type="password" placeholder="********">
+  </div>
+
+  <div class="field">
+    <label>Confirm Password</label>
+    <input type="password" placeholder="********">
+  </div>
+
+  <button class="signup-btn">Sign Up</button>
+
+  <div class="divider">OR CONNECT WITH</div>
+
+  <button class="btn-google">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.8-6.8C35.9 2.4 30.5 0 24 0 14.6 0 6.5 5.4 2.6 13.2l8 6.2C12.4 13.7 17.7 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M47 24.6c0-1.6-.2-3.1-.4-4.6H24v9h12.9c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 7.2-10.4 7.2-17.6z"/>
+      <path fill="#FBBC05" d="M10.5 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-8-6.2C.9 16.5 0 20.1 0 24c0 3.9.9 7.5 2.6 10.8l8-6.2z"/>
+      <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.4-8.2 2.4-6.3 0-11.6-4.2-13.5-9.9l-8 6.2C6.5 42.6 14.6 48 24 48z"/>
+    </svg>
+    Continue with Google
+  </button>
+
+  <div class="footer">
+    Already have an account? <a href="#">Login</a>
+  </div>
+</div>
+
+</body>
+</html>

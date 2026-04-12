@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VroomNepal – Precision Engineering in Motion</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f4f3ff; --surface: #ffffff;
+    --purple: #7b61ff; --purple-light: #ede9ff; --purple-dark: #5a42e0;
+    --text: #1a1a2e; --muted: #6b6b8a; --border: #e2deff;
+    --card-radius: 14px;
+    --font-head: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full viewport height */
+}
+  /* NAV */
+  nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(90deg, #7b61ff, #6a5cff);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  box-shadow: 0 2px 20px rgba(123,97,255,.3);
+  border-bottom: 3px solid #8fd3ff; /* blue line like screenshot */
+}
+  .nav-logo { font-family: var(--font-head); font-weight: 600; font-size: 15px; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { text-decoration: underline; }
+  .nav-links a.active { text-decoration: underline; font-weight: 600; }
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+  /* LOGIN button */
+.btn-login {
+  background: var(--purple);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;   
+}
+
+.btn-login:hover {
+  background: var(--purple);    
+  color: #fff;                  
+}
+
+  /* SIGNUP button */
+  .btn-signup {
+    background: #fff;
+    color: #000; /* black text */
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 20px;
+    cursor: pointer;
+  }
+  .btn-signup:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  }
+
+  /* HERO */
+  .hero {
+  background: linear-gradient(135deg, #f4f3ff 0%, #ede9ff 60%, #dbd4ff 100%);
+  padding: 80px 60px 60px;
+}
+
+.hero-content {
+  max-width: 500px;
+}
+  .hero-eyebrow { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--purple); margin-bottom: 8px; }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(32px, 5vw, 52px); font-weight: 800; line-height: 1.1; margin-bottom: 14px; }
+  .hero h1 span { color: var(--purple); }
+  .hero p { color: var(--muted); font-size: 15px; max-width: 420px; margin-bottom: 32px; }
+
+  .search-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
+  padding: 6px;
+  max-width: 520px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 0 10px;
+}
+
+  .search-icon { color: #666; display: flex; align-items: center; }
+  .search-bar input { flex: 1; border: none; outline: none; background: transparent; font-size: 14px; padding: 12px 8px; color: var(--text); }
+  .search-bar input::placeholder { color: #000000; }
+  .btn-find { margin-left: 10px; background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-family: var(--font-head); font-weight: 700; font-size: 13px; cursor: pointer; transition: background .2s; }
+  .btn-find:hover { background: var(--purple-dark); }
+
+  /* CATEGORIES */
+  /* Categories Section */
+/* Categories Section */
+.categories {
+  background: var(--purple-light); /* light purple background */
+  padding: 40px;
+}
+
+.categories-title {
+  font-family: var(--font-body); /* simple font */
+  font-weight: 600;              /* medium weight */
+  font-size: 20px;               /* clean size */
+  color: #000;                   /* black text */
+  margin-bottom: 20px;
+}
+
+.categories-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categories-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.category-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 16px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-width: 88px;
+  text-align: center;
+}
+
+.category-card.active {
+  background: var(--purple-light);
+  border-color: var(--purple);
+}
+
+.cat-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--purple-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-label {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-head);
+}
+
+/* View All Button */
+.btn-view {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 13px;
+  background: var(--purple);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+}
+.vehicle-img-wrapper {
+  position: relative;
+}
+
+.vehicle-img {
+  width: 100%;
+  height: 148px;
+  object-fit: cover;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.rating-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9); /* purple background */
+  color: #000000;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.vehicle-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.btn-view:hover {
+  background: var(--purple-dark);
+}
+
+  /* RECOMMENDED */
+  .recommended { padding: 8px 40px 40px;  margin-top: 40px; }
+  .vehicles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+  .vehicle-card { background: var(--surface); border-radius: var(--card-radius); border: 1.5px solid var(--border); overflow: hidden; }
+  .vehicle-img-placeholder { width: 100%; height: 148px; display: flex; align-items: center; justify-content: center; font-size: 48px; background: linear-gradient(135deg, #e8e4ff, #d5ccff); }
+  .vehicle-body { padding: 14px 16px; }
+  .vehicle-name { font-family: var(--font-head); font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .vehicle-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .btn-book { width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 8px; font-family: var(--font-head); font-weight: 700; font-size: 12px; padding: 10px; cursor: pointer; }
+  .btn-book:hover { background: var(--purple-dark); }
+
+  /* FOOTER */
+
+.site-footer {
+  background: #ede9ff;         
+  width: 100%;
+  padding: 40px 0;
+  border-top: 2px solid #d5ccff; 
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 60px;
+}
+
+
+.footer-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;                 
+  margin-bottom: 12px;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: #000;                  
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 6px;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: #000;               
+  text-decoration: none;        
+}
+
+.footer-links a:hover {
+  text-decoration: underline;   
+}
+.site-footer {
+  margin-top: auto; 
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">VroomNepal</div>
+  <ul class="nav-links">
+  <li><a href="#" class="active">Home</a></li>
+  <li><a href="#">Vehicles</a></li>
+  <li><a href="#">My Bookings</a></li>
+</ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="signup.html" class="btn-signup">Signup</a>
+
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Precision</div>
+    <h1>Engineering<br><span>in Motion.</span></h1>
+    <p>Experience the next generation of mobility...</p>
+  
+  <div class="search-wrapper">
+    <div class="search-bar">
+      <span class="search-icon">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input type="text" id="searchInput" placeholder="Search car, bike, truck..." />
+    </div>
+    <button class="btn-find">Find Rides</button>
+  </div>
+</section>
+
+
+<section class="categories">
+  <!-- Section Header -->
+  <h2 class="categories-title">Explore Categories</h2>
+
+  <!-- Categories Row -->
+<div class="categories-row">
+  <!-- Categories Grid -->
+  <div class="categories-grid">
+    <div class="category-card active">
+      <div class="cat-icon"><img src="image/car.png" alt="Car" width="40" height="40"></div>
+      <span class="cat-label">Car</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/sportbike.png" alt="Bike" width="40" height="40"></div>
+      <span class="cat-label">Bike</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/motor.png" alt="Scooter" width="40" height="40"></div>
+      <span class="cat-label">Scooter</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/bus.png" alt="Bus" width="40" height="40"></div>
+      <span class="cat-label">Bus</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/agricultural-tractor.png" alt="Tractor" width="40" height="40"></div>
+      <span class="cat-label">Tractor</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/delivery-van.png" alt="Hiace" width="40" height="40"></div>
+      <span class="cat-label">Hiace</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/bulldozer.png" alt="Bulldozer" width="40" height="40"></div>
+      <span class="cat-label">Bulldozer</span>
+    </div>
+    <div class="category-card">
+      <div class="cat-icon"><img src="image/crane-truck.png" alt="Crane" width="40" height="40"></div>
+      <span class="cat-label">Crane</span>
+    </div>
+  </div>
+
+  <!-- View All Button -->
+  <a href="#" class="btn-view">View All →</a>
+</div>
+
+    
+<section class="recommended">
+  <h2 class="recommended-title">Recommended for You</h2>
+  <p class="recommended-subtitle">Precision matches based on your performance profile.</p>
+
+  <div class="vehicles-grid">
+    <!-- Mercedes -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/car.img.jpg" alt="Mercedes AMG GT-R" class="vehicle-img">
+        <span class="rating-badge">⭐ 4.9</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Mercedes</h3>
+        <p class="vehicle-meta">Sport sedan AMG GT-R</p>
+        <p class="vehicle-price">Rs. 5000 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Duke -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/bike.img.jpg" alt="Duke 200" class="vehicle-img">
+        <span class="rating-badge">⭐ 5.0</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Duke 200</h3>
+        <p class="vehicle-meta">Sports Naked Bike</p>
+        <p class="vehicle-price">Rs. 2000 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Truck -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/truck.img.jpg" alt="F-150 Lightning" class="vehicle-img">
+        <span class="rating-badge">⭐ 4.9</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Truck</h3>
+        <p class="vehicle-meta">F-150 Lightning (electric)</p>
+        <p class="vehicle-price">Rs. 8000 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Vespa -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/scooter.img.jpg" alt="Vespa ZX 125" class="vehicle-img">
+        <span class="rating-badge">⭐ 5.0</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Vespa</h3>
+        <p class="vehicle-meta">Vespa ZX 125</p>
+        <p class="vehicle-price">Rs. 1600 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Tractor -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/tractor.img.jpg" alt="Electric Tractor" class="vehicle-img">
+        <span class="rating-badge">⭐ 4.5</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Tractor</h3>
+        <p class="vehicle-meta">70HP 4WD Electric Farm Tractor</p>
+        <p class="vehicle-price">Rs. 5000 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Crane -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/crane.img.jpg" alt="Grove Crane" class="vehicle-img">
+        <span class="rating-badge">⭐ 4.0</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Crane</h3>
+        <p class="vehicle-meta">Grove GHC30 Telescopic Crane</p>
+        <p class="vehicle-price">Rs. 1150 per hour</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Bus -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/bus.img.jpg" alt="Volvo 7900 Electric Bus" class="vehicle-img">
+        <span class="rating-badge">⭐ 4.5</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">Deluxe Night Bus</h3>
+        <p class="vehicle-meta">Volvo 7900 Electric Bus</p>
+        <p class="vehicle-price">Rs. 12000 per day</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Bulldozer -->
+    <div class="vehicle-card">
+      <div class="vehicle-img-wrapper">
+        <img src="image/jcb.img.jpg" alt="JCB Bulldozer" class="vehicle-img">
+        <span class="rating-badge">⭐ 5.0</span>
+      </div>
+      <div class="vehicle-body">
+        <h3 class="vehicle-name">JCB Bull Dozer</h3>
+        <p class="vehicle-meta">JCB 3DXL PLUS</p>
+        <p class="vehicle-price">Rs. 2500 per hour</p>
+        <button class="btn-book">Book Now</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <!-- DriveX -->
+    <div class="footer-column">
+      <h3 class="footer-title">DriveX</h3>
+      <p class="footer-text">
+        © 2026 DriveX, Engineered for Precision.<br>
+        Every Journey defined by performance.
+      </p>
+    </div>
+
+    <!-- Company -->
+    <div class="footer-column">
+      <h3 class="footer-title">Company</h3>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+
+    <!-- Solutions -->
+    <div class="footer-column">
+      <h3 class="footer-title">Solutions</h3>
+      <ul class="footer-links">
+        <li><a href="#">Fleet Solutions</a></li>
+        <li><a href="#">Corporate Rental</a></li>
+      </ul>
+    </div>
+
+    <!-- Help -->
+    <div class="footer-column">
+      <h3 class="footer-title">Help</h3>
+      <ul class="footer-links">
+        <li><a href="#">Support</a></li>
+        <li><a href="#">Technical Core</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
