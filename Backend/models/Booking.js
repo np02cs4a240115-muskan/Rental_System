@@ -80,6 +80,26 @@ const Booking = {
     );
     return result.affectedRows > 0;
   },
+
+  // Returns true if the car has any active (non-cancelled, non-completed) bookings
+  // other than the excluded booking (e.g. the one just cancelled/completed)
+  async hasActiveBookings(carId, excludeBookingId = null) {
+    let sql = `
+      SELECT COUNT(*) AS cnt
+      FROM   bookings
+      WHERE  car_id = ?
+        AND  status NOT IN ('cancelled', 'completed')
+    `;
+    const params = [carId];
+
+    if (excludeBookingId) {
+      sql += ' AND id != ?';
+      params.push(excludeBookingId);
+    }
+
+    const [rows] = await db.execute(sql, params);
+    return rows[0].cnt > 0;
+  },
 };
 
 module.exports = Booking;

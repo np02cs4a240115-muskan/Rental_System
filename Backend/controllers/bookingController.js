@@ -11,10 +11,8 @@ exports.createBooking = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Car not found' });
     }
 
-    if (!car.availability) {
-      return res.status(400).json({ success: false, message: 'Car is not available for booking' });
-    }
-
+    // Check date-based conflicts (ignores the static availability flag which
+    // can be stale — we manage it ourselves below)
     const alreadyBooked = await Booking.isCarBooked(car_id, start_date, end_date);
     if (alreadyBooked) {
       return res.status(409).json({
@@ -31,8 +29,11 @@ exports.createBooking = async (req, res, next) => {
     }
 
     const bookingId = await Booking.create({ user_id, car_id, start_date, end_date, total_price });
-    const booking   = await Booking.findById(bookingId);
 
+    // Mark the car as unavailable now that it has an active booking
+    await Car.update(car_id, { availability: false });
+
+    const booking = await Booking.findById(bookingId);
     res.status(201).json({ success: true, booking });
   } catch (err) {
     next(err);
@@ -93,6 +94,13 @@ exports.cancelBooking = async (req, res, next) => {
     }
 
     await Booking.updateStatus(req.params.id, 'cancelled');
+
+    // Restore car availability if no other active bookings remain
+    const stillBooked = await Booking.hasActiveBookings(booking.car_id, req.params.id);
+    if (!stillBooked) {
+      await Car.update(booking.car_id, { availability: true });
+    }
+
     res.json({ success: true, message: 'Booking cancelled successfully' });
   } catch (err) {
     next(err);
@@ -117,6 +125,16 @@ exports.updateBookingStatus = async (req, res, next) => {
     }
 
     await Booking.updateStatus(req.params.id, status);
+
+    // When a booking ends (completed or cancelled), restore car availability
+    // if no other active bookings remain for that car
+    if (status === 'completed' || status === 'cancelled') {
+      const stillBooked = await Booking.hasActiveBookings(booking.car_id, req.params.id);
+      if (!stillBooked) {
+        await Car.update(booking.car_id, { availability: true });
+      }
+    }
+
     res.json({ success: true, message: `Booking status updated to '${status}'` });
   } catch (err) {
     next(err);
