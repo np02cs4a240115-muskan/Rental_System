@@ -4,18 +4,6 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-/**
- * XAMPP MySQL Connection Pool
- *
- * XAMPP MySQL defaults:
- *  - Host: localhost
- *  - Port: 3306
- *  - User: root
- *  - Password: (empty string by default)
- *  - No auth plugin issues — XAMPP uses MySQL 5.7 / MariaDB by default
- *
- * To use a custom password, set DB_PASSWORD in your .env file.
- */
 const pool = mysql.createPool({
   host:              process.env.DB_HOST     || 'localhost',
   port:              parseInt(process.env.DB_PORT || '3306', 10),
