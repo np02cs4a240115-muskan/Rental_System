@@ -2,7 +2,7 @@
 'use strict';
 
 const express = require('express');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const router  = express.Router();
 
 const bookingController = require('../controllers/bookingController');
@@ -24,23 +24,36 @@ router.post(
   bookingController.createBooking
 );
 
-// GET /api/bookings/my  – logged-in user's bookings
+// GET /api/bookings/my  – logged-in user's bookings  (MUST be before /:id)
 router.get('/my', bookingController.getMyBookings);
 
 // GET /api/bookings  – admin only
 router.get('/', restrictTo('admin'), bookingController.getAllBookings);
 
 // GET /api/bookings/:id
-router.get('/:id', bookingController.getBooking);
+router.get(
+  '/:id',
+  [param('id').isInt({ min: 1 }).withMessage('Valid booking id required')],
+  validate,
+  bookingController.getBooking
+);
 
 // PATCH /api/bookings/:id/cancel
-router.patch('/:id/cancel', bookingController.cancelBooking);
+router.patch(
+  '/:id/cancel',
+  [param('id').isInt({ min: 1 }).withMessage('Valid booking id required')],
+  validate,
+  bookingController.cancelBooking
+);
 
 // PATCH /api/bookings/:id/status  – admin only
 router.patch(
   '/:id/status',
   restrictTo('admin'),
-  [body('status').notEmpty().withMessage('Status is required')],
+  [
+    param('id').isInt({ min: 1 }).withMessage('Valid booking id required'),
+    body('status').notEmpty().withMessage('Status is required'),
+  ],
   validate,
   bookingController.updateBookingStatus
 );

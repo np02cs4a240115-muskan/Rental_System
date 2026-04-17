@@ -17,17 +17,14 @@ const pool = mysql.createPool({
   host:              process.env.DB_HOST     || 'localhost',
   port:              parseInt(process.env.DB_PORT || '3306', 10),
   user:              process.env.DB_USER     || 'root',
-  password:          process.env.DB_PASSWORD || '',
+  password:          process.env.DB_PASSWORD || 'batman',
   database:          process.env.DB_NAME     || 'car_rental_db',
   waitForConnections: true,
   connectionLimit:   10,
   queueLimit:        0,
   charset:           'utf8mb4',
-  // MySQL Workbench / MySQL 8+ may use caching_sha2_password.
-  // Setting authPlugins ensures compatibility without modifying the server.
-  authPlugins: {
-    caching_sha2_password: () => () => Buffer.from(process.env.DB_PASSWORD + '\0'),
-  },
+  // mysql2 handles caching_sha2_password natively on MySQL 8+.
+  // Do NOT override authPlugins — the custom override breaks auth.
 });
 
 // Test the connection on startup

@@ -25,7 +25,7 @@ const Booking = {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    if (days <= 0) throw new Error('end_date must be after start_date');
+    if (days < 1) throw new Error('end_date must be after start_date');
     return +(days * pricePerDay).toFixed(2);
   },
 

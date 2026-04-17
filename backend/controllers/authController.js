@@ -55,9 +55,9 @@ exports.register = async (req, res, next) => {
     }
 
     // ── Determine role ─────────────────────────────────────────────────────
-    // Only allow 'admin' or 'user'; anything else falls back to 'user'.
-    const allowedRoles = ['user', 'admin'];
-    const assignedRole = allowedRoles.includes(role) ? role : 'user';
+    // Public registration can only create 'user' accounts.
+    // Admin accounts must be created by an existing admin (or seeded directly).
+    const assignedRole = 'user';
 
     // ── Create user ────────────────────────────────────────────────────────
     const newId = await User.create({

@@ -10,7 +10,7 @@ exports.createPayment = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    if (req.user.role !== 'admin' && booking.user_id !== req.user.id) {
+    if (req.user.role !== 'admin' && Number(booking.user_id) !== Number(req.user.id)) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
@@ -49,7 +49,7 @@ exports.getPaymentByBooking = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    if (req.user.role !== 'admin' && booking.user_id !== req.user.id) {
+    if (req.user.role !== 'admin' && Number(booking.user_id) !== Number(req.user.id)) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 

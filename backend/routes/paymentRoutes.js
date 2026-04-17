@@ -2,7 +2,7 @@
 'use strict';
 
 const express = require('express');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const router  = express.Router();
 
 const paymentController = require('../controllers/paymentController');
@@ -26,13 +26,21 @@ router.post(
 );
 
 // GET /api/payments/booking/:bookingId
-router.get('/booking/:bookingId', paymentController.getPaymentByBooking);
+router.get(
+  '/booking/:bookingId',
+  [param('bookingId').isInt({ min: 1 }).withMessage('Valid bookingId required')],
+  validate,
+  paymentController.getPaymentByBooking
+);
 
 // PATCH /api/payments/:id/status  – admin only
 router.patch(
   '/:id/status',
   restrictTo('admin'),
-  [body('payment_status').notEmpty().withMessage('payment_status is required')],
+  [
+    param('id').isInt({ min: 1 }).withMessage('Valid payment id required'),
+    body('payment_status').notEmpty().withMessage('payment_status is required'),
+  ],
   validate,
   paymentController.updatePaymentStatus
 );
