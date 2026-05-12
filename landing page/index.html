@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vroom Landing Page</title>
+
+  <link rel="stylesheet" href="style.css"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+  <img src="logo.png" alt="Logo">
+</div>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#">Collection</a></li>
+        <li><a href="#">Rentals</a></li>
+        <li><a href="#">Concierge</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </nav>
+
+    <button class="nav-btn">Book Now</button>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="overlay"></div>
+
+    <div class="hero-content">
+      VELOCITY GALLERY
+      <h1>
+        PRECISION IN <br />
+        EVERY KILOMETER.
+      </h1>
+
+      <div class="search-box">
+        <div class="search-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <input type="text" placeholder="Pickup Location"/>
+        </div>
+
+        <div class="search-item">
+          <i class="fa-regular fa-calendar"></i>
+          <input type="date"/>
+        </div>
+
+        <button>Find Your Ride</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BROWSE SECTION -->
+  <section class="section">
+    <div class="section-top">
+      <h2>Browse by Vibe</h2>
+      <p>Premium categories for every journey.</p>
+    </div>
+
+    <div class="vibe-grid">
+
+      <div class="vibe-card">
+        <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop" alt="">
+        <div class="card-overlay">
+          <h3>EXOTICS</h3>
+          <span>120+ CARS</span>
+        </div>
+      </div>
+
+      <div class="vibe-card">
+        <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1200&auto=format&fit=crop" alt="">
+        <div class="card-overlay">
+          <h3>ELITE SUVS</h3>
+          <span>85+ CARS</span>
+        </div>
+      </div>
+
+      <div class="vibe-card">
+        <img src="https://images.unsplash.com/photo-1593941707882-a56bbc8df8e8?q=80&w=1200&auto=format&fit=crop" alt="">
+        <div class="card-overlay">
+          <h3>VOLTAGE</h3>
+          <span>65+ CARS</span>
+        </div>
+      </div>
+
+      <div class="vibe-card">
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop" alt="">
+        <div class="card-overlay">
+          <h3>LEGENDS</h3>
+          <span>50+ CARS</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AVAILABLE NOW -->
+  <section class="section">
+    <div class="section-top">
+      <h2>Available Now</h2>
+
+      <div class="slider-buttons">
+        <button id="prev">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+
+        <button id="next">
+          <i class="fa-solid fa-angle-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="cars-container" id="carsContainer">
+
+      <div class="car-card">
+        <div class="tag">Available</div>
+
+        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop" alt="">
+
+        <div class="car-info">
+          <h3>Porsche 911 GT3</h3>
+
+          <div class="car-details">
+            <span>Auto</span>
+            <span>Petrol</span>
+            <span>2 Seats</span>
+          </div>
+
+          <div class="price-row">
+            <h4>$320/day</h4>
+            <button>Rent Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-card">
+        <div class="tag">Available</div>
+
+        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1200&auto=format&fit=crop" alt="">
+
+        <div class="car-info">
+          <h3>BMW M8 Competition</h3>
+
+          <div class="car-details">
+            <span>Auto</span>
+            <span>Hybrid</span>
+            <span>4 Seats</span>
+          </div>
+
+          <div class="price-row">
+            <h4>$280/day</h4>
+            <button>Rent Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-card">
+        <div class="tag">Available</div>
+
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop" alt="">
+
+        <div class="car-info">
+          <h3>Tesla Model X Plaid</h3>
+
+          <div class="car-details">
+            <span>Electric</span>
+            <span>Auto</span>
+            <span>5 Seats</span>
+          </div>
+
+          <div class="price-row">
+            <h4>$250/day</h4>
+            <button>Rent Now</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stat-box">
+      <h2>12k+</h2>
+      <p>Premium Customers</p>
+    </div>
+
+    <div class="stat-box">
+      <h2>100%</h2>
+      <p>Trusted Vehicles</p>
+    </div>
+
+    <div class="stat-box">
+      <h2>24/7</h2>
+      <p>Support Service</p>
+    </div>
+
+    <div class="stat-box">
+      <h2>4.9/5</h2>
+      <p>Customer Rating</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to Drive?</h2>
+    <p>
+      Experience the future of travel with our luxury fleet.
+    </p>
+
+    <div class="cta-buttons">
+      <button class="primary-btn">Explore Vehicles</button>
+      <button class="secondary-btn">Contact Us Today</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>
+      <h3>VROOM NEPAL</h3>
+      <p>Luxury vehicles for modern journeys.</p>
+      <p>© 2026 VROOM NEPAL KINETIC PRECISION. ALL RIGHTS RESERVED.</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="#">PRIVACY POLICY</a>
+      <a href="#">TERMS OF SERVICE</a>
+      <a href="#">FLEET LISTING</a>
+      <a href="#">PARTNER WITH US</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

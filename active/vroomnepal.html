@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f1;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9a9a9a;
+    --accent: #3d5afe;
+    --accent-hover: #2541d6;
+    --accent-light: #eef0ff;
+    --border: #e8e7e3;
+    --check-blue: #3d5afe;
+    --star: #f5a623;
+    --price: #1a1a1a;
+    --available: #00b97c;
+    --available-bg: #e8faf3;
+    --tag-bg: #f0f0ee;
+    --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    --shadow-hover: 0 8px 32px rgba(0,0,0,0.13);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 200px;
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-img {
+    width: 150px;
+    height: 50px;
+    object-fit: contain;
+}
+  .logo span { color: var(--accent); }
+
+  .nav { flex: 1; padding: 12px 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 400;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text-primary); }
+  .nav-item.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 3px; background: var(--accent); border-radius: 0 3px 3px 0;
+  }
+  .nav-icon { width: 17px; height: 17px; flex-shrink: 0; }
+
+  .nav-bottom { padding: 12px 0; border-top: 1px solid var(--border); }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 200px; right: 0;
+    height: 58px;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 28px;
+    z-index: 90;
+  }
+  .search-wrap {
+    flex: 1; max-width: 340px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 14px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--text-muted); }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); width: 15px; height: 15px;
+  }
+
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .notif-btn {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: 50%; border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+  }
+  .notif-dot {
+    position: absolute; top: 6px; right: 7px;
+    width: 7px; height: 7px;
+    background: #f44; border-radius: 50%;
+    border: 1.5px solid white;
+  }
+  .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user-text { text-align: right; }
+  .user-name { font-weight: 500; font-size: 13.5px; line-height: 1.3; }
+  .user-role { font-size: 11.5px; color: var(--text-muted); }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 14px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    margin-left: 200px;
+    padding-top: 58px;
+    flex: 1;
+    display: flex;
+  }
+
+  /* ── FILTER PANEL ── */
+  .filter-panel {
+    width: 220px;
+    min-height: calc(100vh - 58px);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    flex-shrink: 0;
+  }
+  .filter-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+  }
+  .filter-section { margin-bottom: 22px; }
+  .filter-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .checkbox-item {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 8px; cursor: pointer;
+    font-size: 13px; color: var(--text-secondary);
+    user-select: none;
+    transition: color 0.12s;
+  }
+  .checkbox-item:hover { color: var(--text-primary); }
+  .checkbox-item input[type="checkbox"] { display: none; }
+  .custom-check {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .checkbox-item input:checked ~ .custom-check {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .custom-check svg { display: none; }
+  .checkbox-item input:checked ~ .custom-check svg { display: block; }
+
+  .price-range { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .range-slider {
+    width: 100%; -webkit-appearance: none; height: 4px;
+    border-radius: 2px; background: linear-gradient(to right, var(--accent) 40%, var(--border) 40%);
+    outline: none;
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: white;
+    border: 2px solid var(--accent);
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  .avail-btns { display: flex; gap: 8px; }
+  .avail-btn {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border);
+    background: white; color: var(--text-secondary);
+    transition: all 0.12s;
+  }
+  .avail-btn.active-avail {
+    background: var(--available); border-color: var(--available); color: white;
+  }
+  .avail-btn.upcoming { background: var(--tag-bg); border-color: var(--border); }
+
+  .stars-row { display: flex; gap: 3px; align-items: center; }
+  .star { color: var(--star); font-size: 16px; }
+  .star.empty { color: #ddd; }
+  .rating-label { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+
+  .clear-btn {
+    width: 100%; padding: 9px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.15s;
+    margin-top: 8px;
+  }
+  .clear-btn:hover { background: var(--bg); color: var(--text-primary); border-color: #ccc; }
+
+  /* ── CONTENT AREA ── */
+  .content {
+    flex: 1;
+    padding: 28px 28px 40px;
+    overflow: auto;
+  }
+
+  .content-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; font-weight: 700;
+    line-height: 1.2; margin-bottom: 4px;
+  }
+  .page-sub { font-size: 13px; color: var(--text-muted); }
+
+  .sort-wrap { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
+  .sort-select {
+    padding: 7px 30px 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b6b'/%3E%3C/svg%3E") no-repeat right 10px center;
+    -webkit-appearance: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-primary);
+    cursor: pointer; outline: none;
+  }
+
+  .vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  /* ── CARD ── */
+  .vehicle-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .vehicle-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+  .card-img-wrap { position: relative; aspect-ratio: 4/2.5; overflow: hidden; }
+  .card-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .vehicle-card:hover .card-img-wrap img { transform: scale(1.04); }
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white; border-radius: 20px;
+    padding: 3px 9px; font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; gap: 4px;
+    backdrop-filter: blur(4px);
+  }
+  .card-star { color: var(--star); font-size: 12px; }
+
+  .card-body { padding: 14px 16px 16px; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+  .card-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 600;
+    line-height: 1.25; color: var(--text-primary);
+  }
+  .card-price-wrap { text-align: right; flex-shrink: 0; margin-left: 8px; }
+  .card-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--accent);
+  }
+  .card-per { font-size: 10px; color: var(--text-muted); display: block; line-height: 1; margin-top: 1px; text-align: right; }
+
+  .card-sub { font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .card-specs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .spec-tag {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--tag-bg);
+    border-radius: 6px; padding: 4px 9px;
+    font-size: 11.5px; color: var(--text-secondary);
+  }
+  .spec-icon { font-size: 12px; }
+
+  .reserve-btn {
+    width: 100%; padding: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+  .reserve-btn:hover { background: var(--accent-hover); }
+  .reserve-btn:active { transform: scale(0.98); }
+
+  .load-more-wrap { text-align: center; margin-top: 28px; }
+  .load-more-btn {
+    padding: 11px 32px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .load-more-btn:hover { background: var(--bg); border-color: #bbb; color: var(--text-primary); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="logo.png" alt="Logo" class="logo-img">
+  
+  </div>
+  <nav class="nav">
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+
+      Dashboard
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+
+      Bookings
+    </div>
+    <div class="nav-item active">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path d="M1 17l2-7h18l2 7"/>
+        <path d="M3 17h18v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"/>
+        <circle cx="7" cy="17" r="2"/>
+        <circle cx="17" cy="17" r="2"/>
+      </svg>
+      
+      Vehicles
+
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <rect x="2" y="5" width="20" height="14" rx="2"/>
+        <path d="M2 10h20"/>
+      </svg>
+     
+      Payments
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+      
+      System Health
+    </div>
+  </nav>
+  <div class="nav-bottom">
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      
+      Settings
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/></svg>
+      
+        Logout
+    </div>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="search-wrap">
+    <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" placeholder="Search vehicles...">
+  </div>
+  <div class="topbar-right">
+    <div class="notif-btn">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+    <div class="user-info">
+      <div class="user-text">
+        <div class="user-name">John Doe</div>
+        <div class="user-role">Customer</div>
+      </div>
+      <div class="avatar">JD</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FILTER PANEL -->
+  <aside class="filter-panel">
+    <div class="filter-title">Refine Gallery</div>
+
+    <div class="filter-section">
+      <div class="filter-label">Category</div>
+      <label class="checkbox-item">
+        <input type="checkbox"> <div class="custom-check">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4l3 3 5-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        
+        Grand Tourer
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" checked> 
+        <div class="custom-check">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4l3 3 5-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        Hypercars
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox">
+         <div class="custom-check">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4l3 3 5-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        Classic Revival
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox">
+         <div class="custom-check">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4l3 3 5-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        
+        Electric Performance
+      </label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Price Range (Day)</div>
+      <div class="price-range"><span>Rs. 500</span><span>Rs. 5,000+</span></div>
+      <input type="range" class="range-slider" min="500" max="5000" value="2500">
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Availability</div>
+      <div class="avail-btns">
+        <button class="avail-btn active-avail">Available Now</button>
+        <button class="avail-btn upcoming">Upcoming</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Minimum Rating</div>
+      <div class="stars-row">
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star empty">★</span>
+        <span class="rating-label">4.0+</span>
+      </div>
+    </div>
+
+    <button class="clear-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+      </svg>
+      Clear Filters
+    </button>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="content-header">
+      <div>
+        <div class="page-title">Active Listings</div>
+        <div class="page-sub">12 rare exhibits ready for departure.</div>
+      </div>
+      <div class="sort-wrap">
+        Sort by:
+        <select class="sort-select">
+          <option>Most Popular</option>
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+          <option>Highest Rated</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="vehicle-grid" id="vehicleGrid"></div>
+
+    <div class="load-more-wrap">
+      <button class="load-more-btn">Load More Vehicles</button>
+    </div>
+  </main>
+</div>
+
+<script>
+const vehicles = [
+  {
+    name: 'Aether Velocity GT',
+    sub: 'Hypercar • 2024',
+    price: 'Rs. 1,200',
+    rating: 4.9,
+    specs: ['1020 HP', '2.1s 0–60'],
+    specIcons: ['⚡', '🏁'],
+    img: 'Aether Velocity.jpg'
+  },
+  {
+    name: 'Zenith Spectre',
+    sub: 'Grand Tourer • 2023',
+    price: 'Rs. 1,850',
+    rating: 4.8,
+    specs: ['2 Seats', 'V12 Engine'],
+    specIcons: ['💺', '🔧'],
+    img: 'Zenith Spectre.jpg'
+  },
+  {
+    name: 'Ignis Spider',
+    sub: 'Convertible • 2024',
+    price: 'Rs. 1,050',
+    rating: 4.9,
+    specs: ['Active Aero', 'Carbon Chassis'],
+    specIcons: ['🌀', '🏗️'],
+    img: 'ignis Spider.jpg'
+  },
+  {
+    name: 'Phantom Coupe',
+    sub: 'Grand Tourer • 2024',
+    price: 'Rs. 2,100',
+    rating: 4.7,
+    specs: ['750 HP', 'AWD'],
+    specIcons: ['⚡', '🛞'],
+    img: 'Porsche.jpg'
+  },
+  {
+    name: 'Volt Suprema',
+    sub: 'Electric • 2024',
+    price: 'Rs. 1,600',
+    rating: 4.9,
+    specs: ['0 Emissions', '3.0s 0–60'],
+    specIcons: ['🍃', '🏁'],
+    img: 'panyukov.jpg'
+  },
+  {
+    name: 'Stratos Classica',
+    sub: 'Classic Revival • 1972',
+    price: 'Rs. 900',
+    rating: 4.6,
+    specs: ['V8 Engine', 'Manual'],
+    specIcons: ['🔧', '⚙️'],
+    img: 'spencer.jpg'
+  },
+];
+
+const grid = document.getElementById('vehicleGrid');
+
+vehicles.forEach(v => {
+  grid.innerHTML += `
+    <div class="vehicle-card">
+      <div class="card-img-wrap">
+        <img src="${v.img}" alt="${v.name}" loading="lazy">
+        <div class="card-badge"><span class="card-star">★</span> ${v.rating}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${v.name}</div>
+          <div class="card-price-wrap">
+            <span class="card-price">${v.price}</span>
+            <span class="card-per">PER DAY</span>
+          </div>
+        </div>
+        <div class="card-sub">${v.sub}</div>
+        <div class="card-specs">
+          ${v.specs.map((s,i) => `<span class="spec-tag"><span class="spec-icon">${v.specIcons[i]}</span>${s}</span>`).join('')}
+        </div>
+        <button class="reserve-btn">Reserve Experience</button>
+      </div>
+    </div>
+  `;
+});
+
+// Checkbox logic
+document.querySelectorAll('.checkbox-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const cb = item.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  });
+});
+
+// Availability toggle
+document.querySelectorAll('.avail-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.avail-btn').forEach(b => b.classList.remove('active-avail'));
+    btn.classList.add('active-avail');
+  });
+});
+</script>
+</body>
+</html>
