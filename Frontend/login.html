@@ -30,13 +30,20 @@
       align-items: center;
     }
 
-    /* Logo */
+    /* Logo Image Optimization */
     .logo-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
       margin-bottom: 26px;
+      width: 100%;
+    }
+
+    .logo-wrap img {
+      max-width: 140px;
+      height: auto;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -224,31 +231,23 @@
 
   <div class="card">
 
-    <!-- Logo -->
     <div class="logo-wrap">
-      <svg width="54" height="54" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="28" cy="28" r="28" fill="#eeeeff"/>
-        <polyline points="10,18 19,38 28,22" fill="none" stroke="#5b5fc7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="28,22 37,38 46,18" fill="none" stroke="#5b5fc7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="14" y1="41" x2="42" y2="41" stroke="#5b5fc7" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-      <span class="logo-text">VroomNepal</span>
+      <img src="logo.png" alt="VroomNepal Logo" onerror="this.style.display='none'; document.getElementById('logo-text-fallback').style.letterSpacing='normal';">
+      <span class="logo-text" id="logo-text-fallback">VroomNepal</span>
     </div>
 
-    <!-- Email -->
     <div class="field">
-      <label for="username">Email</label>
+      <label for="username">Email Address</label>
       <div class="input-wrap" id="emailWrap">
         <svg class="input-icon" viewBox="0 0 24 24">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
           <polyline points="2,4 12,13 22,4"/>
         </svg>
-        <input id="username" type="email" placeholder="johndoe@gmail.com" oninput="clearErr('emailWrap','emailErr')"/>
+        <input id="username" type="text" placeholder="johndoe@gmail.com" oninput="clearErr('emailWrap','emailErr')"/>
       </div>
       <span class="field-error" id="emailErr"></span>
     </div>
 
-    <!-- Password -->
     <div class="field">
       <label for="password">Password</label>
       <div class="input-wrap" id="pwdWrap">
@@ -267,15 +266,12 @@
       <span class="field-error" id="pwdErr"></span>
     </div>
 
-    <!-- Forgot -->
     <div class="forgot">
       <a href="forgotPassword.html">Forgot password?</a>
     </div>
 
-    <!-- Login -->
     <button class="btn" onclick="handleLogin()">Login</button>
 
-    <!-- Google -->
     <button class="btn-google">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
         <path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.8-6.8C35.9 2.4 30.5 0 24 0 14.6 0 6.5 5.4 2.6 13.2l8 6.2C12.4 13.7 17.7 9.5 24 9.5z"/>
@@ -286,7 +282,6 @@
       Continue with Google
     </button>
 
-    <!-- Signup -->
     <div class="signup">
       Don't have an account?<a href="signup.html">Sign Up</a>
     </div>
@@ -294,7 +289,8 @@
   </div>
 
   <script>
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Strict regex validation ensures it doesn't begin with a number or symbol
+    const emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     function showErr(wrapId, errId, msg) {
       document.getElementById(wrapId).classList.add('error');
@@ -315,7 +311,8 @@
         showErr('emailWrap', 'emailErr', 'Please enter your email address.');
         valid = false;
       } else if (!emailRegex.test(email)) {
-        showErr('emailWrap', 'emailErr', 'Please enter a valid email address.');
+        // Blocks usernames starting with numbers or improper formats
+        showErr('emailWrap', 'emailErr', 'Please enter a valid email (must start with a letter).');
         valid = false;
       }
 
@@ -328,7 +325,6 @@
       }
 
       if (valid) {
-        // Proceed with login
         alert('Logging in...');
       }
     }
