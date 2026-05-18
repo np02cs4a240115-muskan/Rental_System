@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VroomNepal Gallery – Complete Payment</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --navy: #0d1b2a;
-    --blue-primary: #1a56db;
+    --navy: #19222d;
+    --blue-primary: #1a66ff;
     --blue-light: #e8f0fe;
-    --accent: #1a56db;
+    --accent: #1a66ff;
     --success: #059669;
     --warn-bg: #fff7ed;
     --warn-border: #fed7aa;
@@ -41,7 +41,7 @@
     background: var(--bg-card);
     border-bottom: 1px solid var(--border);
     padding: 0 2rem;
-    height: 60px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -53,26 +53,27 @@
   .logo {
     display: flex;
     align-items: center;
-    gap: .45rem;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.25rem;
+    gap: .6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--navy);
     text-decoration: none;
+    height: 100%;
+    letter-spacing: -0.02em;
   }
 
-  .logo-icon {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, #1a56db, #3b82f6);
-    border-radius: 8px;
-    display: grid; place-items: center;
-    color: #fff;
-    font-size: .8rem;
-    font-weight: 800;
-    font-family: 'DM Sans', sans-serif;
+  .logo-img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    display: block;
   }
 
-  .logo span { color: #1a56db; }
+  .logo span { 
+    color: var(--blue-primary); 
+    font-weight: 700;
+  }
 
   .nav-right {
     display: flex;
@@ -100,7 +101,7 @@
 
   .avatar {
     width: 36px; height: 36px;
-    background: linear-gradient(135deg, #1a56db, #60a5fa);
+    background: linear-gradient(135deg, #1a66ff, #60a5fa);
     border-radius: 50%;
     display: grid; place-items: center;
     color: #fff;
@@ -179,7 +180,7 @@
   .method-card.active {
     border-color: var(--blue-primary);
     background: #eff6ff;
-    box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+    box-shadow: 0 0 0 3px rgba(26,102,255,.1);
   }
 
   .method-check {
@@ -193,7 +194,6 @@
   }
 
   .method-card.active .method-check { display: grid; }
-
   .method-check svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 2.5; fill: none; }
 
   .method-icon-wrap {
@@ -209,7 +209,7 @@
   .method-name { font-size: .875rem; font-weight: 600; color: var(--text-dark); }
   .method-desc { font-size: .72rem; color: var(--text-muted); }
 
-  /* ── E-WALLET FORM ── */
+  /* ── PAYMENT DETAILS SECTIONS ── */
   .ewallet-section {
     background: #f8faff;
     border: 1px solid #dbeafe;
@@ -231,12 +231,8 @@
     color: #fff;
   }
 
-  .ewallet-header-text p:first-child {
-    font-size: .875rem; font-weight: 600; color: var(--text-dark);
-  }
-  .ewallet-header-text p:last-child {
-    font-size: .72rem; color: var(--text-muted);
-  }
+  .ewallet-header-text p:first-child { font-size: .875rem; font-weight: 600; color: var(--text-dark); }
+  .ewallet-header-text p:last-child { font-size: .72rem; color: var(--text-muted); }
 
   .form-group { margin-bottom: 1rem; }
 
@@ -246,10 +242,6 @@
     font-weight: 500;
     color: var(--text-mid);
     margin-bottom: .4rem;
-  }
-
-  .input-wrap {
-    position: relative;
   }
 
   input[type="text"], input[type="password"], select {
@@ -268,7 +260,7 @@
 
   input:focus, select:focus {
     border-color: var(--blue-primary);
-    box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+    box-shadow: 0 0 0 3px rgba(26,102,255,.1);
   }
 
   select {
@@ -304,7 +296,7 @@
   .btn-pay {
     width: 100%;
     padding: .9rem 1.5rem;
-    background: linear-gradient(135deg, #1a56db, #2563eb);
+    background: linear-gradient(135deg, #1a66ff, #2563eb);
     color: #fff;
     font-family: 'DM Sans', sans-serif;
     font-size: 1rem;
@@ -313,14 +305,14 @@
     border-radius: 10px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: .6rem;
-    box-shadow: 0 4px 16px rgba(26,86,219,.35);
+    box-shadow: 0 4px 16px rgba(26,102,255,.35);
     transition: transform .15s, box-shadow .15s, filter .15s;
     letter-spacing: .02em;
   }
 
   .btn-pay:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(26,86,219,.45);
+    box-shadow: 0 6px 24px rgba(26,102,255,.45);
     filter: brightness(1.05);
   }
 
@@ -360,15 +352,11 @@
     border-radius: 10px;
     overflow: hidden;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #0d1b2a 0%, #1e3a5f 100%);
+    background: linear-gradient(135deg, #19222d 0%, #1e3a5f 100%);
     position: relative;
   }
 
-  .car-image-wrap img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
+  .car-image-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
   .car-badge {
     position: absolute;
@@ -383,13 +371,7 @@
   }
 
   .car-info { flex: 1; }
-  .car-name {
-    font-family: 'Playfair Display', serif;
-    font-size: .95rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: .15rem;
-  }
+  .car-name { font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 700; color: var(--text-dark); margin-bottom: .15rem; }
   .car-sub { font-size: .75rem; color: var(--text-muted); }
 
   /* ── PRICE ROWS ── */
@@ -404,7 +386,6 @@
   }
 
   .price-row:last-of-type { border-bottom: none; }
-
   .price-row .val { font-weight: 500; color: var(--text-dark); }
 
   .total-row {
@@ -416,25 +397,15 @@
     border-top: 2px solid var(--border);
   }
 
-  .total-label {
-    font-size: .95rem;
-    font-weight: 700;
-    color: var(--text-dark);
-  }
-
-  .total-amount {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: var(--blue-primary);
-  }
+  .total-label { font-size: .95rem; font-weight: 700; color: var(--text-dark); }
+  .total-amount { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; color: var(--blue-primary); }
 
   /* ── SUMMARY CTA ── */
   .summary-cta {
     margin-top: 1.25rem;
     width: 100%;
     padding: .85rem;
-    background: linear-gradient(135deg, #1a56db, #2563eb);
+    background: linear-gradient(135deg, #1a66ff, #2563eb);
     color: #fff;
     font-family: 'DM Sans', sans-serif;
     font-size: .95rem;
@@ -443,20 +414,12 @@
     border-radius: 10px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: .5rem;
-    box-shadow: 0 4px 16px rgba(26,86,219,.3);
+    box-shadow: 0 4px 16px rgba(26,102,255,.3);
     transition: transform .15s, box-shadow .15s;
   }
 
-  .summary-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,.4); }
-
-  .summary-tos {
-    margin-top: .75rem;
-    font-size: .7rem;
-    color: var(--text-muted);
-    text-align: center;
-    line-height: 1.5;
-  }
-
+  .summary-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,102,255,.4); }
+  .summary-tos { margin-top: .75rem; font-size: .7rem; color: var(--text-muted); text-align: center; line-height: 1.5; }
   .summary-tos a { color: var(--blue-primary); text-decoration: underline; }
 
   /* ── SECURITY BADGES ── */
@@ -472,24 +435,11 @@
     box-shadow: var(--shadow);
   }
 
-  .badge-item {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: .78rem;
-    font-weight: 500;
-    color: var(--text-muted);
-  }
-
+  .badge-item { display: flex; align-items: center; gap: .5rem; font-size: .78rem; font-weight: 500; color: var(--text-muted); }
   .badge-item svg { color: var(--success); }
 
   /* ── FOOTER ── */
-  footer {
-    background: var(--navy);
-    color: #9ca3af;
-    margin-top: 3.5rem;
-    padding: 3rem 2rem 2rem;
-  }
+  footer { background: var(--navy); color: #9ca3af; margin-top: 3.5rem; padding: 3rem 2rem 2rem; }
 
   .footer-inner {
     max-width: 1100px;
@@ -501,53 +451,16 @@
     border-bottom: 1px solid #1f2d3d;
   }
 
-  .footer-brand-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #f9fafb;
-    margin-bottom: .5rem;
-  }
-
-  .footer-brand-desc {
-    font-size: .8rem;
-    line-height: 1.65;
-    color: #6b7280;
-  }
-
-  .footer-col-title {
-    font-size: .78rem;
-    font-weight: 700;
-    color: #d1d5db;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    margin-bottom: .9rem;
-  }
+  .footer-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #f9fafb; margin-bottom: .5rem; }
+  .footer-brand-desc { font-size: .8rem; line-height: 1.65; color: #6b7280; }
+  .footer-col-title { font-size: .78rem; font-weight: 700; color: #d1d5db; letter-spacing: .08em; text-transform: uppercase; margin-bottom: .9rem; }
 
   .footer-links { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
-  .footer-links a {
-    font-size: .82rem;
-    color: #6b7280;
-    text-decoration: none;
-    transition: color .2s;
-  }
+  .footer-links a { font-size: .82rem; color: #6b7280; text-decoration: none; transition: color .2s; }
   .footer-links a:hover { color: #d1d5db; }
 
-  .newsletter-form {
-    display: flex;
-    gap: .4rem;
-    margin-top: .75rem;
-  }
-
-  .newsletter-form input {
-    flex: 1;
-    background: #1f2d3d;
-    border-color: #2d3d50;
-    color: #d1d5db;
-    font-size: .82rem;
-    padding: .55rem .8rem;
-  }
-
+  .newsletter-form { display: flex; gap: .4rem; margin-top: .75rem; }
+  .newsletter-form input { flex: 1; background: #1f2d3d; border-color: #2d3d50; color: #d1d5db; font-size: .82rem; padding: .55rem .8rem; }
   .newsletter-form input::placeholder { color: #4b5563; }
   .newsletter-form input:focus { border-color: #3b82f6; }
 
@@ -562,105 +475,27 @@
     flex-shrink: 0;
     transition: background .2s;
   }
-
   .newsletter-btn:hover { background: #2563eb; }
+  .footer-bottom { max-width: 1100px; margin: 1.5rem auto 0; font-size: .75rem; color: #4b5563; text-align: right; }
 
-  .footer-bottom {
-    max-width: 1100px;
-    margin: 1.5rem auto 0;
-    font-size: .75rem;
-    color: #4b5563;
-    text-align: right;
-  }
-
-  /* ── PORSCHE IMAGE via free CDN ── */
-  /* fallback gradient if image fails */
   .car-image-fallback {
     width: 100%; height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0d1b2a, #1e3a5f);
+    background: linear-gradient(135deg, #19222d, #1e3a5f);
     font-size: .65rem;
     color: #60a5fa;
     text-align: center;
     padding: 4px;
   }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.45);
-    backdrop-filter: blur(4px);
-    z-index: 200;
-    display: none;
-    place-items: center;
-  }
-  .modal-overlay.open { display: grid; }
-
-  .modal-box {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    max-width: 360px;
-    width: 90%;
-    box-shadow: var(--shadow-lg);
-    animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
-  }
-
-  @keyframes popIn {
-    from { transform: scale(.85); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-
-  .modal-icon {
-    width: 64px; height: 64px;
-    background: #d1fae5;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    margin: 0 auto 1.25rem;
-    color: var(--success);
-  }
-
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: .5rem;
-  }
-
-  .modal-subtitle { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
-
-  .modal-close {
-    margin-top: 1.5rem;
-    padding: .7rem 2rem;
-    background: var(--blue-primary);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: .9rem;
-    cursor: pointer;
-    transition: background .2s;
-  }
-
-  .modal-close:hover { background: #2563eb; }
-
-  @media (max-width: 760px) {
-    main { grid-template-columns: 1fr; }
-    .footer-inner { grid-template-columns: 1fr 1fr; }
-    .summary-panel { position: static; }
-  }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a class="logo" href="#">
-    <div class="logo-icon">V</div>
+    <img src="image/logo.png" alt="VroomNepal Logo" class="logo-img">
     Vroom<span>Nepal</span>
   </a>
   <div class="nav-right">
@@ -677,16 +512,13 @@
   </div>
 </nav>
 
-<!-- MAIN -->
 <main>
-  <!-- LEFT: PAYMENT FORM -->
   <div class="payment-panel">
     <h1 class="panel-title">Complete Payment</h1>
     <p class="panel-subtitle">Secure your luxury experience with precision-grade encryption.</p>
 
     <p class="section-label">Select Payment Method</p>
     <div class="method-grid">
-      <!-- Debit Card -->
       <div class="method-card" id="tab-debit" onclick="selectMethod('debit')">
         <div class="method-icon-wrap debit">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -698,7 +530,6 @@
         <div class="method-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
       </div>
 
-      <!-- E-Wallet -->
       <div class="method-card active" id="tab-ewallet" onclick="selectMethod('ewallet')">
         <div class="method-icon-wrap ewallet">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
@@ -710,7 +541,6 @@
         <div class="method-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
       </div>
 
-      <!-- Bank Transfer -->
       <div class="method-card" id="tab-bank" onclick="selectMethod('bank')">
         <div class="method-icon-wrap bank">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="3,9 12,3 21,9"/><path d="M3 9v11h18V9"/><line x1="9" y1="22" x2="9" y2="12"/><line x1="15" y1="22" x2="15" y2="12"/></svg>
@@ -723,7 +553,6 @@
       </div>
     </div>
 
-    <!-- E-WALLET DETAILS (shown by default) -->
     <div class="ewallet-section" id="form-ewallet">
       <div class="ewallet-header">
         <div class="ewallet-icon-badge">
@@ -762,7 +591,6 @@
       </div>
     </div>
 
-    <!-- DEBIT CARD FORM (hidden by default) -->
     <div class="ewallet-section" id="form-debit" style="display:none;">
       <div class="ewallet-header">
         <div class="ewallet-icon-badge" style="background:linear-gradient(135deg,#0284c7,#38bdf8)">
@@ -775,25 +603,24 @@
       </div>
       <div class="form-group">
         <label class="field-label">Card Number</label>
-        <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        <input type="text" id="card-num" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="field-label">Expiry (MM/YY)</label>
-          <input type="text" placeholder="MM/YY" maxlength="5">
+          <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5">
         </div>
         <div class="form-group">
           <label class="field-label">CVV</label>
-          <input type="password" placeholder="•••" maxlength="3">
+          <input type="password" id="card-cvv" placeholder="•••" maxlength="3">
         </div>
       </div>
       <div class="form-group">
         <label class="field-label">Cardholder Name</label>
-        <input type="text" placeholder="John Doe">
+        <input type="text" id="card-name" placeholder="John Doe">
       </div>
     </div>
 
-    <!-- BANK TRANSFER FORM (hidden by default) -->
     <div class="ewallet-section" id="form-bank" style="display:none;">
       <div class="ewallet-header">
         <div class="ewallet-icon-badge" style="background:linear-gradient(135deg,#059669,#34d399)">
@@ -806,7 +633,7 @@
       </div>
       <div class="form-group">
         <label class="field-label">Bank Name</label>
-        <select>
+        <select id="bank-name">
           <option>Nepal Investment Mega Bank</option>
           <option>Nabil Bank</option>
           <option>Himalayan Bank</option>
@@ -815,11 +642,11 @@
       </div>
       <div class="form-group">
         <label class="field-label">Account Number</label>
-        <input type="text" placeholder="Enter your account number">
+        <input type="text" id="bank-acc" placeholder="Enter your account number">
       </div>
       <div class="form-group">
         <label class="field-label">Account Name</label>
-        <input type="text" placeholder="John Doe">
+        <input type="text" id="bank-holder" placeholder="John Doe">
       </div>
     </div>
 
@@ -829,7 +656,6 @@
     </button>
   </div>
 
-  <!-- RIGHT: BOOKING SUMMARY -->
   <div class="summary-panel">
     <div class="summary-title">Booking Summary</div>
 
@@ -865,7 +691,6 @@
   </div>
 </main>
 
-<!-- SECURITY BAR -->
 <div style="max-width:1100px;margin:0 auto;padding:0 1.5rem;">
   <div class="security-bar">
     <div class="badge-item">
@@ -883,7 +708,6 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div>
@@ -916,20 +740,8 @@
       </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2024 VROOMNEPAL GALLERY. PRECISION IN MOTION.</div>
+  <div class="footer-bottom">© 2026 VROOMNEPAL GALLERY. PRECISION IN MOTION.</div>
 </footer>
-
-<!-- SUCCESS MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal-box">
-    <div class="modal-icon">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
-    </div>
-    <div class="modal-title">Payment Successful!</div>
-    <p class="modal-subtitle">Your Porsche 911 GT3 rental has been confirmed. Check your email and mobile for booking details.</p>
-    <button class="modal-close" onclick="closeModal()">Back to Home</button>
-  </div>
-</div>
 
 <script>
   function selectMethod(method) {
@@ -949,23 +761,31 @@
   function handlePayment() {
     const activeMethod = document.querySelector('.method-card.active').id.replace('tab-', '');
 
+    // Form Field validations based on current active payment method selection
     if (activeMethod === 'ewallet') {
       const mobile = document.getElementById('mobile').value.trim();
       const pin = document.getElementById('pin').value.trim();
       if (!mobile || mobile.length < 10) { alert('Please enter a valid 10-digit mobile number.'); return; }
       if (!pin || pin.length < 4) { alert('Please enter your wallet PIN (4–6 digits).'); return; }
+    } 
+    else if (activeMethod === 'debit') {
+      const cardNum = document.getElementById('card-num').value.trim();
+      const expiry = document.getElementById('card-expiry').value.trim();
+      const cvv = document.getElementById('card-cvv').value.trim();
+      if (!cardNum || cardNum.length < 15) { alert('Please enter a valid Card Number.'); return; }
+      if (!expiry || expiry.length < 4) { alert('Please enter expiration dates (MM/YY).'); return; }
+      if (!cvv || cvv.length < 3) { alert('Please enter a valid CVV.'); return; }
+    } 
+    else if (activeMethod === 'bank') {
+      const acc = document.getElementById('bank-acc').value.trim();
+      const holder = document.getElementById('bank-holder').value.trim();
+      if (!acc) { alert('Please enter your bank account number.'); return; }
+      if (!holder) { alert('Please enter the account holder name.'); return; }
     }
 
-    document.getElementById('successModal').classList.add('open');
+    // Force application interface route directly to paymentSucess.html file destination location
+    window.location.href = "paymentSucess.html";
   }
-
-  function closeModal() {
-    document.getElementById('successModal').classList.remove('open');
-  }
-
-  document.getElementById('successModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
 </script>
 </body>
 </html>
