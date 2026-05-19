@@ -28,7 +28,7 @@ router.post(
 router.get('/my', bookingController.getMyBookings);
 
 // GET /api/bookings  – admin only
-router.get('/', restrictTo('admin'), bookingController.getAllBookings);
+router.get('/', restrictTo('admin', 'vendor'), bookingController.getAllBookings);
 
 // GET /api/bookings/:id
 router.get(
@@ -49,7 +49,7 @@ router.patch(
 // PATCH /api/bookings/:id/status  – admin only
 router.patch(
   '/:id/status',
-  restrictTo('admin'),
+  restrictTo('admin', 'vendor'),
   [
     param('id').isInt({ min: 1 }).withMessage('Valid booking id required'),
     body('status').notEmpty().withMessage('Status is required'),

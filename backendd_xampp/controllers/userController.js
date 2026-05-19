@@ -1,14 +1,13 @@
-// controllers/userController.js
 'use strict';
 
-const db   = require('../config/db');
+const db = require('../config/db');
 const User = require('../models/User');
 
 exports.getProfile = async (req, res, next) => {
   try {
     res.json({ success: true, user: req.user });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -16,11 +15,11 @@ exports.updateProfile = async (req, res, next) => {
   try {
     const { name, phone } = req.body;
     const userId = req.user.id;
+    const normalizedPhone = phone !== undefined ? User.normalizePhone(phone) : req.user.phone;
 
-    // ── Phone uniqueness check (only when a new phone value is provided) ───
-    if (phone && phone !== req.user.phone) {
-      const existing = await User.findByPhone(phone);
-      if (existing && Number(existing.id) !== Number(userId)) {
+    if (normalizedPhone && normalizedPhone !== req.user.phone) {
+      const existingUser = await User.findByPhone(normalizedPhone);
+      if (existingUser && Number(existingUser.id) !== Number(userId)) {
         return res.status(409).json({
           success: false,
           message: 'Phone number already in use by another account',
@@ -28,9 +27,8 @@ exports.updateProfile = async (req, res, next) => {
       }
     }
 
-    // Allow undefined → keep existing; allow null/'' → clear the field
-    const newName  = name  !== undefined ? name           : req.user.name;
-    const newPhone = phone !== undefined ? (phone || null) : req.user.phone;
+    const newName = name !== undefined ? String(name).trim() : req.user.name;
+    const newPhone = phone !== undefined ? normalizedPhone : req.user.phone;
 
     await db.execute(
       'UPDATE users SET name = ?, phone = ? WHERE id = ?',
@@ -43,8 +41,8 @@ exports.updateProfile = async (req, res, next) => {
     );
 
     res.json({ success: true, user: rows[0] });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -53,40 +51,47 @@ exports.getAllUsers = async (req, res, next) => {
     const [rows] = await db.execute(
       'SELECT id, name, email, phone, role, created_at FROM users ORDER BY created_at DESC'
     );
+
     res.json({ success: true, count: rows.length, users: rows });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
-// POST /api/users  – admin creates a new user (can assign any role)
 exports.createUser = async (req, res, next) => {
   try {
     const { name, email, password, phone, role } = req.body;
 
-    const emailExists = await User.findByEmail(email);
-    if (emailExists) {
+    const existingEmail = await User.findByEmail(email);
+    if (existingEmail) {
       return res.status(409).json({ success: false, message: 'Email already registered' });
     }
 
     if (phone) {
-      const phoneExists = await User.findByPhone(phone);
-      if (phoneExists) {
+      const existingPhone = await User.findByPhone(phone);
+      if (existingPhone) {
         return res.status(409).json({ success: false, message: 'Phone number already registered' });
       }
     }
 
-    const allowedRoles = ['user', 'admin'];
+    const allowedRoles = ['user', 'vendor', 'admin'];
     const assignedRole = allowedRoles.includes(role) ? role : 'user';
 
-    const newId = await User.create({ name, email, password, phone: phone || null, role: assignedRole });
+    const newUserId = await User.create({
+      name,
+      email,
+      password,
+      phone: phone || null,
+      role: assignedRole,
+    });
+
     const [rows] = await db.execute(
       'SELECT id, name, email, phone, role, created_at FROM users WHERE id = ?',
-      [newId]
+      [newUserId]
     );
 
     res.status(201).json({ success: true, user: rows[0] });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };

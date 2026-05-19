@@ -1,4 +1,6 @@
-const jwt  = require('jsonwebtoken');
+'use strict';
+
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
@@ -10,23 +12,36 @@ const protect = async (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({ success: false, message: 'Not authorised – no token provided' });
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorised - no token provided',
+      });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await User.findById(decoded.id);
+
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User belonging to this token no longer exists' });
+      return res.status(401).json({
+        success: false,
+        message: 'User belonging to this token no longer exists',
+      });
     }
 
     req.user = user;
     next();
-  } catch (err) {
-    if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ success: false, message: 'Token has expired – please log in again' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token has expired - please log in again',
+      });
     }
-    return res.status(401).json({ success: false, message: 'Invalid token' });
+
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid token',
+    });
   }
 };
 
@@ -37,6 +52,7 @@ const restrictTo = (...roles) => (req, res, next) => {
       message: `Role '${req.user.role}' is not permitted to perform this action`,
     });
   }
+
   next();
 };
 

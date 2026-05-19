@@ -1,39 +1,35 @@
-// models/User.js
 'use strict';
 
-const db     = require('../config/db');
 const bcrypt = require('bcryptjs');
+const db = require('../config/db');
 
 const SALT_ROUNDS = 12;
+const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
+const normalizePhone = (phone) => {
+  const cleaned = String(phone || '').replace(/[^\d+]/g, '');
+  return cleaned || null;
+};
 
 const User = {
-  // ─── Finders ─────────────────────────────────────────────────────────────
-
   async findByEmail(email) {
-    const [rows] = await db.execute(
-      'SELECT * FROM users WHERE email = ? LIMIT 1',
-      [email]
-    );
+    const [rows] = await db.execute('SELECT * FROM users WHERE email = ? LIMIT 1', [normalizeEmail(email)]);
     return rows[0] || null;
   },
 
   async findByPhone(phone) {
-    const [rows] = await db.execute(
-      'SELECT * FROM users WHERE phone = ? LIMIT 1',
-      [phone]
-    );
+    const normalizedPhone = normalizePhone(phone);
+    if (!normalizedPhone) return null;
+
+    const [rows] = await db.execute('SELECT * FROM users WHERE phone = ? LIMIT 1', [normalizedPhone]);
     return rows[0] || null;
   },
 
-  /**
-   * Flexible lookup: accepts either an e-mail address or a phone number.
-   * Detects by presence of '@' — phone numbers never contain it.
-   */
   async findByCredential(identifier) {
-    const isEmail = identifier.includes('@');
-    return isEmail
-      ? this.findByEmail(identifier)
-      : this.findByPhone(identifier);
+    const credential = String(identifier || '').trim();
+    if (credential.includes('@')) {
+      return this.findByEmail(identifier);
+    }
+    return this.findByPhone(credential);
   },
 
   async findById(id) {
@@ -44,29 +40,26 @@ const User = {
     return rows[0] || null;
   },
 
-  // ─── Mutation ─────────────────────────────────────────────────────────────
-
-  /**
-   * Create a user.
-   * - role defaults to 'user'; callers may pass 'admin' when permitted.
-   * - phone is stored as-is; the UNIQUE constraint on the column prevents
-   *   duplicates at the database level in addition to the controller check.
-   */
   async create({ name, email, password, phone = null, role = 'user' }) {
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
     const [result] = await db.execute(
       'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-      [name, email, hashedPassword, phone || null, role]
+      [String(name || '').trim(), normalizeEmail(email), hashedPassword, normalizePhone(phone), role]
     );
     return result.insertId;
   },
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-
   async comparePassword(plainPassword, hashedPassword) {
     return bcrypt.compare(plainPassword, hashedPassword);
   },
+
+  // NEW: update password by email
+  async updatePassword(email, newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    await db.execute('UPDATE users SET password = ? WHERE email = ?', [hashedPassword, normalizeEmail(email)]);
+  },
+
+  normalizePhone,
 };
 
 module.exports = User;

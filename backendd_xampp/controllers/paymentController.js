@@ -1,5 +1,12 @@
-const Payment = require('../models/Payment');
+'use strict';
+
 const Booking = require('../models/Booking');
+const Payment = require('../models/Payment');
+
+const PAYMENT_STATUSES = ['pending', 'completed', 'failed', 'refunded'];
+
+const isOwnerOrAdmin = (user, ownerId) =>
+  user.role === 'admin' || Number(ownerId) === Number(user.id);
 
 exports.createPayment = async (req, res, next) => {
   try {
@@ -10,7 +17,7 @@ exports.createPayment = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    if (req.user.role !== 'admin' && Number(booking.user_id) !== Number(req.user.id)) {
+    if (!isOwnerOrAdmin(req.user, booking.user_id)) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
@@ -21,24 +28,36 @@ exports.createPayment = async (req, res, next) => {
       });
     }
 
-    const existing = await Payment.findByBookingId(booking_id);
-    if (existing) {
-      return res.status(409).json({
-        success: false,
-        message: 'A payment record already exists for this booking',
+    const existingPayment = await Payment.findByBookingId(booking_id);
+    if (existingPayment) {
+      if (existingPayment.payment_status === 'completed') {
+        await Booking.updateStatus(booking_id, 'confirmed');
+        return res.json({ success: true, payment: existingPayment });
+      }
+
+      await Payment.updateForBooking(booking_id, {
+        amount: booking.total_price,
+        payment_method: payment_method || existingPayment.payment_method || 'cash',
+        payment_status: 'completed',
       });
+      await Booking.updateStatus(booking_id, 'confirmed');
+
+      const payment = await Payment.findByBookingId(booking_id);
+      return res.json({ success: true, payment });
     }
 
     const paymentId = await Payment.create({
       booking_id,
       amount: booking.total_price,
       payment_method: payment_method || 'cash',
+      payment_status: 'completed',
     });
+    await Booking.updateStatus(booking_id, 'confirmed');
 
     const payment = await Payment.findById(paymentId);
     res.status(201).json({ success: true, payment });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -49,7 +68,7 @@ exports.getPaymentByBooking = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    if (req.user.role !== 'admin' && Number(booking.user_id) !== Number(req.user.id)) {
+    if (!isOwnerOrAdmin(req.user, booking.user_id)) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
@@ -59,20 +78,19 @@ exports.getPaymentByBooking = async (req, res, next) => {
     }
 
     res.json({ success: true, payment });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
 exports.updatePaymentStatus = async (req, res, next) => {
   try {
     const { payment_status } = req.body;
-    const validStatuses = ['pending', 'completed', 'failed', 'refunded'];
 
-    if (!validStatuses.includes(payment_status)) {
+    if (!PAYMENT_STATUSES.includes(payment_status)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
+        message: `Invalid status. Must be one of: ${PAYMENT_STATUSES.join(', ')}`,
       });
     }
 
@@ -91,7 +109,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
       success: true,
       message: `Payment status updated to '${payment_status}'`,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };

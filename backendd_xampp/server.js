@@ -1,47 +1,43 @@
-// server.js
 'use strict';
 
 require('dotenv').config();
 const express = require('express');
-const cors    = require('cors');
+const cors = require('cors');
+const path = require('path');
 
+const authRoutes = require('./routes/authRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const carRoutes = require('./routes/carRoutes');
+const esewaRoutes = require('./routes/esewaRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const userRoutes = require('./routes/userRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
-// ── Route imports 
-const authRoutes    = require('./routes/authRoutes');
-const carRoutes     = require('./routes/carRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const userRoutes    = require('./routes/userRoutes');
-
 const app = express();
+const PORT = process.env.PORT || 5001;
 
-// ── Global middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
-// ── Health check
 app.get('/', (req, res) => {
-  res.json({ success: true, message: 'Car Rental API is running 🚗' });
+  res.sendFile(path.join(__dirname, 'frontend', 'landing', 'index.html'));
 });
 
-// ── API routes 
-app.use('/api/auth',     authRoutes);
-app.use('/api/cars',     carRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/cars', carRoutes);
+app.use('/api/esewa', esewaRoutes);
 app.use('/api/payments', paymentRoutes);
-app.use('/api/users',    userRoutes);
+app.use('/api/users', userRoutes);
 
-// ── Error handling 
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Start server 
-const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`✅  Server running on http://localhost:${PORT}`);
-  console.log(`📌  Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;

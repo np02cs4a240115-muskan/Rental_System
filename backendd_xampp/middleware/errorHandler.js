@@ -1,38 +1,40 @@
+'use strict';
+
 const notFound = (req, res, next) => {
-  const err = new Error(`Route not found: ${req.method} ${req.originalUrl}`);
-  err.statusCode = 404;
-  next(err);
+  const error = new Error(`Route not found: ${req.method} ${req.originalUrl}`);
+  error.statusCode = 404;
+  next(error);
 };
 
-const errorHandler = (err, req, res, _next) => {
-  const statusCode = err.statusCode || 500;
+const errorHandler = (error, req, res, _next) => {
+  const statusCode = error.statusCode || 500;
 
-  if (err.code === 'ER_DUP_ENTRY') {
+  if (error.code === 'ER_DUP_ENTRY') {
     return res.status(409).json({
       success: false,
       message: 'A record with those details already exists',
     });
   }
 
-  if (err.code === 'ER_ROW_IS_REFERENCED_2') {
+  if (error.code === 'ER_ROW_IS_REFERENCED_2') {
     return res.status(409).json({
       success: false,
-      message: 'Cannot delete – related records exist',
+      message: 'Cannot delete - related records exist',
     });
   }
 
   if (process.env.NODE_ENV === 'development') {
-    console.error('💥 Error:', err);
+    console.error('Error:', error);
     return res.status(statusCode).json({
       success: false,
-      message: err.message,
-      stack: err.stack,
+      message: error.message,
+      stack: error.stack,
     });
   }
 
-  res.status(statusCode).json({
+  return res.status(statusCode).json({
     success: false,
-    message: statusCode === 500 ? 'Internal server error' : err.message,
+    message: statusCode === 500 ? 'Internal server error' : error.message,
   });
 };
 

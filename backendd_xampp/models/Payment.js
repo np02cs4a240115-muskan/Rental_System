@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
 const Payment = {
-  async create({ booking_id, amount, payment_method = 'cash' }) {
+  async create({ booking_id, amount, payment_method = 'cash', payment_status = 'pending' }) {
     const [result] = await db.execute(
-      `INSERT INTO payments (booking_id, amount, payment_method)
-       VALUES (?, ?, ?)`,
-      [booking_id, amount, payment_method]
+      `INSERT INTO payments (booking_id, amount, payment_method, payment_status)
+       VALUES (?, ?, ?, ?)`,
+      [booking_id, amount, payment_method, payment_status]
     );
     return result.insertId;
   },
@@ -30,6 +30,22 @@ const Payment = {
     const [result] = await db.execute(
       'UPDATE payments SET payment_status = ? WHERE id = ?',
       [payment_status, id]
+    );
+    return result.affectedRows > 0;
+  },
+
+  async updateForBooking(bookingId, fields) {
+    const allowed = ['amount', 'payment_method', 'payment_status', 'transaction_uuid'];
+    const keys = Object.keys(fields).filter(key => allowed.includes(key));
+    if (keys.length === 0) return false;
+
+    const setParts = keys.map(key => `${key} = ?`).join(', ');
+    const values = keys.map(key => fields[key]);
+    values.push(bookingId);
+
+    const [result] = await db.execute(
+      `UPDATE payments SET ${setParts} WHERE booking_id = ?`,
+      values
     );
     return result.affectedRows > 0;
   },
