@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vroom Nepal – Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f5f7;
+    --sidebar-bg: #ffffff;
+    --card: #ffffff;
+    --accent: #5b4ff5;
+    --accent2: #7b6ff8;
+    --accent-light: #ede9ff;
+    --text: #1a1a2e;
+    --text-muted: #8a8aa0;
+    --text-light: #b8b8cc;
+    --green: #22c55e;
+    --green-light: #dcfce7;
+    --red: #ef4444;
+    --red-light: #fee2e2;
+    --orange: #f97316;
+    --orange-light: #ffedd5;
+    --border: #e8e8f0;
+    --shadow: 0 2px 12px rgba(91,79,245,0.07);
+    --shadow-lg: 0 8px 32px rgba(91,79,245,0.13);
+    --sidebar-w: 220px;
+    --topbar-h: 60px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 16px;
+  }
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; }
+
+  nav { flex: 1; padding: 16px 10px; overflow-y: auto; }
+  nav ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    font-size: inherit; font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  nav a:hover { background: var(--bg); color: var(--text); }
+  nav a.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+  .sidebar-footer { padding: 12px 10px 20px; border-top: 1px solid var(--border); }
+  .sidebar-footer a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: inherit; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: all .18s; }
+  .sidebar-footer a:hover { background: var(--bg); color: var(--text); }
+  .sidebar-footer a svg { width: 17px; height: 17px; }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: var(--topbar-h);
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .search-box {
+    flex: 1; max-width: 600px;
+    height: 50px;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 7px 14px;
+    color: var(--text-muted); font-size: 18px;
+    cursor: text;
+    transition: border .18s;
+  }
+  .search-box:focus-within { border-color: var(--accent); }
+  .search-box input {
+    border: none; background: transparent; outline: none;
+    font-size: inherit; color: var(--text); font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .notif-btn {
+    position: relative; width: 40px; height: 40px;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted);
+    transition: all .18s;
+  }
+  .notif-btn:hover { background: var(--accent-light); color: var(--accent); }
+  .notif-badge {
+    position: absolute; top: 6px; right: 6px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--sidebar-bg);
+  }
+  .user-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 12px 6px 6px;
+    width: 200px;
+    border-radius: 12px; border: 1px solid var(--border);
+    background: var(--bg); cursor: pointer;
+    transition: all .18s;
+  }
+  .user-pill:hover { border-color: var(--accent); }
+  .user-avatar {
+    width: 35px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 700;
+  }
+  .user-info { line-height: 1.2; }
+  .user-name { font-size: inherit; font-weight: 600; }
+  .user-role { font-size: inherit; color: var(--text-muted); }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1; overflow-y: auto;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  /* ── WELCOME ── */
+  .welcome h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .welcome p { font-size: 16px; color: var(--text-muted); margin-top: 3px; }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 6px;
+    box-shadow: var(--shadow);
+    transition: transform .18s, box-shadow .18s;
+    cursor: default;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .stat-header { display: flex; align-items: center; gap: 8px; }
+  .stat-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .stat-label { font-size: 16px; font-weight: 600; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -.5px; }
+
+  /* ── MIDDLE ROW ── */
+  .mid-row { display: grid; grid-template-columns: 1fr 260px; gap: 16px; }
+
+  /* ── CURRENTLY DRIVING CARD ── */
+ .driving-card {
+  background: linear-gradient(135deg, #4338e0 0%, #5b4ff5 40%, #7c6ff7 100%);
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  min-height: 160px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 8px 30px rgba(91,79,245,.35);
+
+  max-width: 900px;   /* limit card length */
+  margin-left: 0;  /* ✅ pushes card to the right */
+  margin-right: auto;    /* ✅ ensures it hugs the right edge */
+}
+
+  .driving-info { padding: 24px 28px; flex: 1; z-index: 2; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+  .driving-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.18); border-radius: 20px;
+    padding: 4px 10px; font-size: 11px; font-weight: 400!important; color: #fff;
+    letter-spacing: normal; text-transform: none; width: fit-content;
+  }
+  .driving-badge::before { content:''; width:7px; height:7px; border-radius:50%; background:#4ade80; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
+  .driving-title { font-family: 'arial', sans-serif; font-size: 28px; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 8px; }
+  .driving-desc { font-size: 13px; color: rgba(255,255,255,.75); margin-top: 4px; }
+  .driving-timer {
+    background: rgba(255,255,255,.14); border-radius: 10px;
+    padding: 8px 14px; margin-top: 14px; width: fit-content;
+    
+
+.driving-title {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: 400 !important;   /* normal weight */
+  font-size: 20px;
+  color: #fff;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+.driving-desc {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 14px;
+  color: rgba(255,255,255,.85);
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+  }
+  .timer-label { font-size: 9px; color: rgba(255,255,255,.6); text-transform: none;  font-weight: 600; }
+  .timer-value { font-family: 'arial', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .driving-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn {
+    padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; transition: all .18s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-white { background: #fff; color: var(--accent); }
+  .btn-white:hover { background: #f0edff; }
+  .btn-outline-white { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.5); }
+  .btn-outline-white:hover { background: rgba(255,255,255,.12); }
+.driving-img {
+  flex: 1;                /* take up all remaining space on the right */
+  position: relative;
+  display: flex;
+  align-items: stretch;   /* stretch to card height */
+  justify-content: flex-end;
+}
+
+.driving-img img {
+  width: 100%;            /* fill the right side completely */
+  height: 100%;           /* match card height */
+  object-fit: contain;      /* cover entire area without leaving gaps */
+  object-position: center;
+  transform: scale(1.44); 
+}
+
+
+
+.driving-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(91,79,245,.35) 0%, transparent 60%);
+}
+
+
+
+  /* placeholder car image using CSS */
+  .car-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+
+  /* ── FAVORITES ── */
+.favorites-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+
+  /* Shift the card left */
+  margin-left: -80px;   /* adjust this value as needed */
+  /* or use transform if you prefer */
+  /* transform: translateX(-20px); */
+}
+
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  .view-all { font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: none; }
+  .view-all:hover { text-decoration: underline; }
+  .fav-list { display: flex; flex-direction: column; gap: 10px; }
+  .fav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 12px; border: 1px solid var(--border);
+    cursor: pointer; transition: all .18s;
+  }
+  .fav-item:hover { border-color: var(--accent); background: var(--accent-light); }
+  .fav-img {
+    width: 48px; height: 36px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+    background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .fav-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .fav-info { flex: 1; }
+  .fav-name { font-size: 20px; font-weight: 600; }
+  .fav-price { font-size: 20px; color: var(--text-muted); }
+  .fav-heart { color: var(--red); font-size: 16px; cursor: pointer; transition: transform .18s; }
+  .fav-heart:hover { transform: scale(1.3); }
+
+  /* ── ACTIVITY TABLE ── */
+.activity-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  height: auto;
+  margin-top: 0;   /* no extra gap above */
+  padding-top: 0;  /* no extra gap inside */
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.download-btn svg {
+  width: 16px;
+  height: 10px;
+  color: #294cbf;
+}
+.download-btn span {
+  font-size: 14px;
+  color: #294cbf;
+  font-weight: 400;
+}
+.download-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
+  margin-top: 0;   /* ensures table hugs header */
+}
+thead th {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: var(--bg); }
+tbody td {
+  padding: 12px 12px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+
+.vehicle-name { font-weight: 600; }
+.cost { font-weight: 600; color: var(--text); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-green { background: var(--green-light); color: #16a34a; }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-orange { background: var(--orange-light); color: var(--orange); }
+.badge::before {
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+}
+
+.action-btns { display: flex; gap: 6px; }
+.action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  transition: all .18s;
+  font-size: 13px;
+}
+.action-btn:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+
+  /* ── FAB ── */
+  .fab {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    border: none; font-size: 26px; cursor: pointer;
+    box-shadow: 0 6px 24px rgba(91,79,245,.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .18s; z-index: 999;
+  }
+  .fab:hover { background: #4338e0; transform: scale(1.08) rotate(90deg); box-shadow: 0 8px 30px rgba(91,79,245,.5); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(20,18,40,.55);
+    backdrop-filter: blur(4px);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .22s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: #fff; border-radius: 20px; padding: 28px;
+    width: 420px; max-width: 95vw;
+    box-shadow: 0 24px 60px rgba(0,0,0,.2);
+    transform: translateY(16px); transition: transform .22s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 18px; }
+  .modal-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; color: var(--text-muted);
+    transition: all .15s;
+  }
+  .modal-close:hover { background: var(--red-light); color: var(--red); }
+  .modal { position: relative; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 9px 12px; border-radius: 10px;
+    border: 1.5px solid var(--border); font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none; transition: border .18s; background: #fff;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-primary { background: var(--accent); color: #fff; padding: 10px 22px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .18s; }
+  .btn-primary:hover { background: #4338e0; }
+  .btn-secondary { background: var(--bg); color: var(--text); padding: 10px 18px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .18s; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── NOTIFICATION DROPDOWN ── */
+  .notif-dropdown {
+    position: absolute; top: calc(var(--topbar-h) + 6px); right: 100px;
+    width: 310px; background: #fff; border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: var(--shadow-lg);
+    z-index: 200; overflow: hidden;
+    opacity: 0; pointer-events: none; transform: translateY(-8px); transition: all .2s;
+  }
+  .notif-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+  .notif-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .notif-header span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
+  .mark-all { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600; }
+  .notif-item { padding: 12px 16px; display: flex; gap: 10px; border-bottom: 1px solid var(--border); transition: background .15s; cursor: pointer; }
+  .notif-item:hover { background: var(--bg); }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+  .notif-dot.read { background: var(--border); }
+  .notif-msg { font-size: 13px; line-height: 1.4; }
+  .notif-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── TIMER countdown ── */
+  #timer { font-variant-numeric: tabular-nums; }
+
+  /* scrollbar */
+  .content::-webkit-scrollbar { width: 5px; }
+  .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* keeps children at the top */
+}
+
+  .content::-webkit-scrollbar-track { background: transparent; }
+  .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2,1fr); }
+    .mid-row { grid-template-columns: 1fr; }
+    .driving-img { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a class="logo" href="#">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+        <path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/>
+        <rect x="9" y="11" width="14" height="10" rx="2"/>
+        <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Vroom</div>
+      <div class="logo-sub">Nepal</div>
+    </div>
+  </a>
+
+  <nav>
+    <ul>
+      <li>
+        <a class="active" onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Bookings
+        </a>
+      </li>
+      <li>
+        <a onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+          Vehicles
+        </a>
+      </li>
+      <li>
+        <a onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Earnings
+        </a>
+      </li>
+      <li>
+        <a onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Users
+        </a>
+      </li>
+      <li>
+        <a onclick="setActive(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          System Health
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a onclick="setActive(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+      Settings
+    </a>
+    <a style="color:#ef4444" onclick="handleLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search vehicles..." id="searchInput" oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="toggleNotif()" title="Notifications">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div class="notif-badge"></div>
+      </div>
+
+      <div class="user-pill" onclick="toggleUserMenu()">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">John Doe</div>
+          <div class="user-role">Customer</div>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);margin-left:4px"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICATION DROPDOWN -->
+  <div class="notif-dropdown" id="notifDropdown">
+    <div class="notif-header">
+      <span>Notifications</span>
+      <span class="mark-all" onclick="markAllRead()">Mark all read</span>
+    </div>
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="notif-dot"></div>
+      <div>
+        <div class="notif-msg">Your rental for <strong>Porsche 911 GT3</strong> ends in 2 days.</div>
+        <div class="notif-time">10 minutes ago</div>
+      </div>
+    </div>
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="notif-dot"></div>
+      <div>
+        <div class="notif-msg">Payment of <strong>Rs. 8,400</strong> confirmed.</div>
+        <div class="notif-time">2 hours ago</div>
+      </div>
+    </div>
+    <div class="notif-item" onclick="markRead(this)">
+      <div class="notif-dot read"></div>
+      <div>
+        <div class="notif-msg">Your review for Range Rover Autobiography was received.</div>
+        <div class="notif-time">Yesterday</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- WELCOME -->
+    <div class="welcome">
+      <h1>Welcome back, John. 👋</h1>
+      <p>Your next precision experience is ready for takeoff.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:#ede9ff;color:var(--accent)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span class="stat-label">Active Rentals</span>
+        </div>
+        <div class="stat-value">1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:#dbeafe;color:#3b82f6">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </div>
+          <span class="stat-label">Total Bookings</span>
+        </div>
+        <div class="stat-value">12</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:#dcfce7;color:#16a34a">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <span class="stat-label">Total Spent</span>
+        </div>
+        <div class="stat-value" style="font-size:20px">Rs. 2,450</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:#ffedd5;color:#f97316">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <span class="stat-label">Pending Payments</span>
+        </div>
+        <div class="stat-value" style="font-size:20px">Rs. 0</div>
+      </div>
+    </div>
+
+    <!-- MID ROW -->
+    <div class="mid-row">
+
+      <!-- CURRENTLY DRIVING -->
+<div class="driving-card">
+  <div class="driving-info">
+    <div>
+      <span class="driving-badge">Currently Driving</span>
+      <div class="driving-title">Porsche 911 GT3</div>
+      <div class="driving-desc">
+        Performance and precision. Your<br>current companion on the road.
+      </div>
+    </div>
+    <div>
+      <div class="driving-timer">
+        <div class="timer-label">Time Remaining</div>
+        <div class="timer-value" id="timer">02d 14h 35m</div>
+      </div>
+      <div class="driving-actions">
+        <button class="btn btn-white" onclick="openManageModal()">Manage Trip</button>
+        <button class="btn btn-outline-white" onclick="openExtendModal()">Extend Time</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="driving-img">
+    <div class="driving-img-overlay"></div>
+    <!-- Replace SVG with your GT3 image -->
+    <img src="image/GT3.jpg" alt="Porsche 911 GT3" />
+  </div>
+</div>
+
+      <!-- FAVORITES -->
+      <div class="favorites-card">
+        <div class="card-header">
+          <span class="card-title">Favorite Vehicles</span>
+          <a class="view-all" onclick="alert('View all favorites')">View All</a>
+        </div>
+        <div class="fav-list">
+          <div class="fav-item">
+            <div class="fav-img">🚗</div>
+            <div class="fav-info">
+              <div class="fav-name">Tesla Model S Plaid</div>
+              <div class="fav-price">Rs. 180/day</div>
+            </div>
+            <span class="fav-heart" onclick="toggleHeart(this)">♥</span>
+          </div>
+          <div class="fav-item">
+            <div class="fav-img">🏎️</div>
+            <div class="fav-info">
+              <div class="fav-name">BMW M5 CS</div>
+              <div class="fav-price">Rs. 210/day</div>
+            </div>
+            <span class="fav-heart" onclick="toggleHeart(this)">♥</span>
+          </div>
+          <div class="fav-item">
+            <div class="fav-img">🚙</div>
+            <div class="fav-info">
+              <div class="fav-name">Lamborghini Urus</div>
+              <div class="fav-price">Rs. 450/day</div>
+            </div>
+            <span class="fav-heart" onclick="toggleHeart(this)">♥</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+ <!-- RECENT ACTIVITY -->
+<div class="activity-card">
+  <div class="card-header">
+    <span class="card-title">Recent Activity</span>
+    <button class="download-btn" onclick="downloadReport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+      </svg>
+      <span>Download Report</span>
+    </button>
+  </div>
+
+  <table id="activityTable">
+    <thead>
+      <tr>
+        <th>Vehicle</th>
+        <th>Date Range</th>
+        <th>Cost</th>
+        <th>Distance</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="activityBody">
+      <tr>
+        <td class="vehicle-name">Range Rover Autobiography</td>
+        <td>Oct 12 – Oct 15, 2025</td>
+        <td class="cost">Rs. 8,400</td>
+        <td>320 km</td>
+        <td><span class="badge badge-green">Completed</span></td>
+        <td>
+          <div class="action-btns">
+            <div class="action-btn" title="View" onclick="viewTrip('Range Rover Autobiography')">👁</div>
+            <div class="action-btn" title="Invoice" onclick="downloadInvoice('Range Rover Autobiography')">🧾</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="vehicle-name">Audi RS7 Sportback</td>
+        <td>Sep 28 – Sep 30, 2025</td>
+        <td class="cost">Rs. 6,200</td>
+        <td>145 km</td>
+        <td><span class="badge badge-green">Completed</span></td>
+        <td>
+          <div class="action-btns">
+            <div class="action-btn" title="View" onclick="viewTrip('Audi RS7 Sportback')">👁</div>
+            <div class="action-btn" title="Invoice" onclick="downloadInvoice('Audi RS7 Sportback')">🧾</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="vehicle-name">Mercedes-AMG G63</td>
+        <td>Sep 15 – Sep 16, 2025</td>
+        <td class="cost">Rs. 0</td>
+        <td>0 km</td>
+        <td><span class="badge badge-red">Cancelled</span></td>
+        <td>
+          <div class="action-btns">
+            <div class="action-btn" title="View" onclick="viewTrip('Mercedes-AMG G63')">👁</div>
+            <div class="action-btn" title="Rebook" onclick="rebookVehicle('Mercedes-AMG G63')">🔄</div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- FAB -->
+<button class="fab" onclick="openNewBookingModal()" title="New Booking">+</button>
+
+<!-- MANAGE TRIP MODAL -->
+<div class="modal-overlay" id="manageModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('manageModal')">✕</button>
+    <h2>Manage Trip</h2>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">Porsche 911 GT3 — Active Rental</p>
+    <div class="form-group">
+      <label>Trip Status</label>
+      <select>
+        <option>Currently Driving</option>
+        <option>Parked</option>
+        <option>Return Early</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <input type="text" placeholder="Add a note about your trip...">
+    </div>
+    <div class="form-group">
+      <label>Current Location</label>
+      <input type="text" placeholder="e.g. Thamel, Kathmandu">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveManage()">Save Changes</button>
+      <button class="btn-secondary" onclick="closeModal('manageModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXTEND TIME MODAL -->
+<div class="modal-overlay" id="extendModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('extendModal')">✕</button>
+    <h2>Extend Rental</h2>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">Current end: <strong>April 18, 2026</strong></p>
+    <div class="form-group">
+      <label>Extend By</label>
+      <select id="extendDays">
+        <option value="1">1 Day – Rs. 4,200</option>
+        <option value="2">2 Days – Rs. 8,400</option>
+        <option value="3">3 Days – Rs. 12,600</option>
+        <option value="7">1 Week – Rs. 29,400</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>New End Date</label>
+      <input type="text" id="newEndDate" value="April 19, 2026" readonly style="background:var(--bg)">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="confirmExtend()">Confirm Extension</button>
+      <button class="btn-secondary" onclick="closeModal('extendModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bookingModal')">✕</button>
+    <h2>New Booking</h2>
+    <div class="form-group">
+      <label>Vehicle</label>
+      <select>
+        <option>Tesla Model S Plaid</option>
+        <option>BMW M5 CS</option>
+        <option>Lamborghini Urus</option>
+        <option>Porsche Taycan</option>
+        <option>Ferrari Roma</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Pickup Date</label>
+      <input type="date">
+    </div>
+    <div class="form-group">
+      <label>Return Date</label>
+      <input type="date">
+    </div>
+    <div class="form-group">
+      <label>Pickup Location</label>
+      <input type="text" placeholder="e.g. Kathmandu Airport">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="confirmBooking()">Book Now</button>
+      <button class="btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW TRIP MODAL -->
+<div class="modal-overlay" id="viewTripModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('viewTripModal')">✕</button>
+    <h2 id="viewTripTitle">Trip Details</h2>
+    <div id="viewTripContent" style="font-size:14px;line-height:1.8;color:var(--text-muted)"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeModal('viewTripModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // NAV
+  function setActive(el) {
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // NOTIFICATIONS
+  function toggleNotif() {
+    const d = document.getElementById('notifDropdown');
+    d.classList.toggle('open');
+    // close on outside click
+    setTimeout(() => {
+      document.addEventListener('click', closeNotifOutside, { once: true });
+    }, 10);
+  }
+  function closeNotifOutside(e) {
+    const d = document.getElementById('notifDropdown');
+    if (!d.contains(e.target)) d.classList.remove('open');
+  }
+  function markRead(item) {
+    item.querySelector('.notif-dot').classList.add('read');
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-dot').forEach(d => d.classList.add('read'));
+  }
+
+  // USER MENU
+  function toggleUserMenu() {
+    alert('User profile – Coming soon!');
+  }
+
+  // MODALS
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+  function openManageModal() { openModal('manageModal'); }
+  function openExtendModal() {
+    openModal('extendModal');
+    document.getElementById('extendDays').addEventListener('change', updateExtendDate);
+  }
+  function openNewBookingModal() { openModal('bookingModal'); }
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  // EXTEND DATE LOGIC
+  function updateExtendDate() {
+    const days = parseInt(document.getElementById('extendDays').value);
+    const base = new Date('2026-04-18');
+    base.setDate(base.getDate() + days);
+    const opts = { year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('newEndDate').value = base.toLocaleDateString('en-US', opts);
+  }
+
+  function saveManage() {
+    closeModal('manageModal');
+    showToast('Trip updated successfully!');
+  }
+
+  function confirmExtend() {
+    closeModal('extendModal');
+    showToast('Rental extended! 🎉');
+  }
+
+  function confirmBooking() {
+    closeModal('bookingModal');
+    showToast('Booking confirmed! We\'ll see you soon.');
+    // Add to activity table
+    const tbody = document.getElementById('activityBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="vehicle-name">New Booking</td>
+      <td>—</td>
+      <td class="cost">—</td>
+      <td>—</td>
+      <td><span class="badge badge-orange">Upcoming</span></td>
+      <td><div class="action-btns"><div class="action-btn" onclick="viewTrip('New Booking')">👁</div></div></td>
+    `;
+    tr.style.animation = 'fadeIn .3s ease';
+    tbody.prepend(tr);
+  }
+
+  // TRIP ACTIONS
+  function viewTrip(name) {
+    document.getElementById('viewTripTitle').textContent = name;
+    document.getElementById('viewTripContent').innerHTML = `
+      <strong>Vehicle:</strong> ${name}<br>
+      <strong>Status:</strong> Completed<br>
+      <strong>Driver:</strong> John Doe<br>
+      <strong>Pickup:</strong> Kathmandu Airport<br>
+      <strong>Drop-off:</strong> Pokhara City Center<br>
+      <strong>Duration:</strong> 3 days<br>
+      <strong>Total Cost:</strong> Rs. 8,400<br>
+      <strong>Rating:</strong> ⭐⭐⭐⭐⭐
+    `;
+    openModal('viewTripModal');
+  }
+
+  function downloadInvoice(name) {
+    showToast(`Invoice for ${name} downloading...`);
+  }
+
+  function rebookVehicle(name) {
+    openModal('bookingModal');
+  }
+
+  // HEART TOGGLE
+  function toggleHeart(el) {
+    const active = el.style.color === 'rgb(107, 114, 128)';
+    el.style.color = active ? 'var(--red)' : 'rgb(107, 114, 128)';
+    el.style.transform = 'scale(1.4)';
+    setTimeout(() => el.style.transform = 'scale(1)', 200);
+  }
+
+  // DOWNLOAD REPORT
+  function downloadReport() {
+    showToast('Preparing your report...');
+    setTimeout(() => showToast('Report downloaded! 📄'), 1500);
+  }
+
+  // SEARCH
+  function handleSearch(val) {
+    const rows = document.querySelectorAll('#activityBody tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(val.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  // LOGOUT
+  function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+      showToast('Logging out...');
+      setTimeout(() => showToast('Goodbye, John! 👋'), 800);
+    }
+  }
+
+  // TOAST
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    Object.assign(t.style, {
+      position: 'fixed', bottom: '90px', right: '28px',
+      background: '#1a1a2e', color: '#fff',
+      padding: '12px 18px', borderRadius: '12px',
+      fontSize: '13px', fontWeight: '600',
+      boxShadow: '0 8px 24px rgba(0,0,0,.25)',
+      zIndex: '9999', transition: 'all .3s',
+      opacity: '0', transform: 'translateY(10px)'
+    });
+    document.body.appendChild(t);
+    requestAnimationFrame(() => {
+      t.style.opacity = '1';
+      t.style.transform = 'translateY(0)';
+    });
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(10px)';
+      setTimeout(() => t.remove(), 300);
+    }, 2500);
+  }
+
+  // COUNTDOWN TIMER
+  let totalSeconds = (2 * 86400) + (14 * 3600) + (35 * 60);
+  function updateTimer() {
+    if (totalSeconds <= 0) {
+      document.getElementById('timer').textContent = 'Expired';
+      return;
+    }
+    const d = Math.floor(totalSeconds / 86400);
+    const h = Math.floor((totalSeconds % 86400) / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    document.getElementById('timer').textContent =
+      `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+    totalSeconds--;
+  }
+  updateTimer();
+  setInterval(updateTimer, 60000);
+</script>
+</body>
+</html>
