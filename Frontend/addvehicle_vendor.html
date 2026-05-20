@@ -4,375 +4,429 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add Vehicle – VroomNepal Vendor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f5f6fa;
+      font-family: 'DM Sans', sans-serif;
+      background: #f8f9fa;
       color: #1a1a2e;
       display: flex;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      font-size: 14px;
     }
 
-    /* ── Sidebar ── */
+    /* ── SIDEBAR SYSTEM ── */
     .sidebar {
-      width: 155px;
+      width: 260px;
+      min-width: 260px; 
       background: #fff;
-      border-right: 1px solid #e8e8f0;
-      display: flex;
+      display: flex; 
       flex-direction: column;
-      flex-shrink: 0;
+      border-right: 1px solid #edf2f7; 
+      padding: 24px 0;
+      position: fixed; 
+      top: 0;
+      left: 0; 
+      height: 100vh; 
+      z-index: 100;
     }
-    .logo {
-      padding: 18px 16px 16px;
-      border-bottom: 1px solid #f0f0f5;
+    
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 24px;
+      margin-bottom: 32px;
+      height: 40px;
+      text-decoration: none;
     }
-    .logo-inner { display: flex; align-items: center; gap: 6px; }
-    .logo-text { font-size: 14px; font-weight: 700; color: #5b2be0; letter-spacing: -0.3px; }
-    .logo-text span { color: #1a1a2e; }
+    
+    .brand-logo-mark {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    
+    .brand-name {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+    }
+    
+    .brand-name .text-vroom { 
+      color: #1e293b;
+    }
+    
+    .brand-name .text-nepal { 
+      color: #4f46e5;
+    }
 
-    nav { flex: 1; padding: 10px 0; }
+    nav { 
+      flex: 1; 
+      padding: 0 16px; 
+      display: flex;
+      flex-direction: column; 
+      gap: 4px;
+    }
+    
     nav a {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 16px;
-      font-size: 13.5px; font-weight: 500;
-      color: #6b6b80; text-decoration: none;
-      position: relative;
-      transition: background 0.15s, color 0.15s;
+      display: flex;
+      align-items: center; 
+      gap: 12px;
+      padding: 12px 16px; 
+      border-radius: 8px;
+      font-size: 14px; 
+      font-weight: 500; 
+      color: #5c6575;
+      text-decoration: none;
+      transition: background .15s, color .15s;
     }
-    nav a:hover { background: #f5f3ff; color: #5b2be0; }
-    nav a.active { background: #f0ecff; color: #5b2be0; font-weight: 600; }
-    nav a.active::before {
-      content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
-      width: 3px; background: #5b2be0; border-radius: 0 3px 3px 0;
+    
+    nav a:hover { 
+      background: #f4f3ff;
+      color: #4f46e5; 
     }
-    nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
+    
+    nav a.active { 
+      background: #f0eeff;
+      color: #4f46e5; 
+      font-weight: 600;
+    }
+    
+    nav a svg { 
+      width: 20px;
+      height: 20px; 
+      flex-shrink: 0; 
+      stroke: currentColor; 
+      fill: none; 
+      stroke-width: 2;
+    }
+    
+    nav a:not(.active) svg { 
+      stroke: #8a94a6;
+    }
+    
+    nav a.active svg { 
+      stroke: #4f46e5;
+    }
 
-    .logout-wrap { padding: 14px 16px; border-top: 1px solid #f0f0f5; }
+    .logout-wrap { 
+      padding: 0 16px; 
+      margin-top: auto;
+    }
+    
     .logout-wrap a {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13.5px; font-weight: 500; color: #6b6b80; text-decoration: none;
-      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px; 
+      border-radius: 8px;
+      font-size: 14px; 
+      font-weight: 500; 
+      color: #5c6575;
+      text-decoration: none; 
+      transition: background .15s;
     }
-    .logout-wrap a:hover { color: #e53e3e; }
-    .logout-wrap svg { width: 17px; height: 17px; }
+    
+    .logout-wrap a:hover { 
+      background: #fff0f0;
+      color: #e74c3c; 
+    }
+    
+    .logout-wrap a svg { 
+      width: 20px;
+      height: 20px;
+      stroke: #8a94a6; 
+      fill: none; 
+      stroke-width: 2; 
+    }
+    
+    .logout-wrap a:hover svg { 
+      stroke: #e74c3c;
+    }
 
-    /* ── Main ── */
-    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    /* ── MAIN CONTENT VIEWPORT SYSTEM ── */
+    .main { 
+      margin-left: 260px;
+      flex: 1; 
+      display: flex; 
+      flex-direction: column;
+      min-height: 100vh; 
+    }
 
     /* ── Topbar ── */
     .topbar {
-      background: #fff; border-bottom: 1px solid #e8e8f0;
-      padding: 0 28px; height: 58px;
-      display: flex; align-items: center; justify-content: space-between;
+      background: #fff;
+      border-bottom: 1px solid #edf2f7;
+      padding: 16px 40px; 
+      display: flex; 
+      align-items: center;
+      justify-content: space-between; 
+      gap: 20px;
+      position: sticky; 
+      top: 0;
+      z-index: 50;
+    }
+    .search-wrap {
+      display: flex; 
+      align-items: center; 
+      gap: 10px;
+      background: #f5f6fa;
+      border-radius: 30px; 
+      padding: 10px 20px;
+      width: 380px; 
+      border: 1px solid #ebebeb;
+    }
+    .search-wrap svg { 
+      width: 18px; 
+      height: 18px; 
+      stroke: #7e8b9b;
+      fill: none; 
+      stroke-width: 2.2; 
       flex-shrink: 0;
     }
-    .search-wrap { position: relative; width: 240px; }
-    .search-wrap svg {
-      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-      color: #b0b0c0; width: 15px; height: 15px;
-    }
     .search-wrap input {
-      width: 100%; padding: 8px 12px 8px 34px;
-      border: 1px solid #e8e8f0; border-radius: 8px;
-      font-size: 13px; color: #6b6b80; background: #fafafa;
-      outline: none; font-family: 'Inter', sans-serif;
+      border: none;
+      background: transparent; 
+      outline: none; 
+      font-size: 14px; 
+      color: #1a1a2e; 
+      width: 100%; 
     }
-    .search-wrap input::placeholder { color: #b0b0c0; }
-    .topbar-right { display: flex; align-items: center; gap: 18px; }
-    .bell-btn { background: none; border: none; cursor: pointer; color: #6b6b80; display: flex; padding: 4px; }
-    .bell-btn svg { width: 20px; height: 20px; }
-    .user-info { display: flex; align-items: center; gap: 10px; }
-    .user-info .name-role { text-align: right; }
-    .user-info .name { font-size: 13.5px; font-weight: 600; color: #1a1a2e; }
-    .user-info .role { font-size: 11.5px; color: #9b9bb0; }
+    .topbar-right { display: flex; align-items: center; gap: 24px; }
+    .bell-btn { background: none; border: none; cursor: pointer; color: #4a5568; display: flex; }
+    .bell-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .name-role { text-align: left; line-height: 1.3; }
+    .user-info .name { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .user-info .role { font-size: 12px; color: #7e8b9b; }
     .avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: #c4b5fd; overflow: hidden;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #1a1a2e;
       display: flex; align-items: center; justify-content: center;
     }
-    .avatar-placeholder { font-size: 14px; font-weight: 700; color: #5b2be0; }
+    .avatar-placeholder { font-size: 14px; font-weight: 700; color: #fff; }
 
-    /* ── Content ── */
-    .content { flex: 1; padding: 24px 28px; overflow-y: auto; }
+    /* ── Content Grid Columns ── */
+    .content { padding: 32px 40px; flex: 1; }
 
     /* Breadcrumb */
-    .breadcrumb {
-      font-size: 12.5px; color: #9b9bb0; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .breadcrumb a { color: #9b9bb0; text-decoration: none; }
-    .breadcrumb a:hover { color: #5b2be0; }
-    .breadcrumb .sep { color: #c0c0d0; }
-    .breadcrumb .current { color: #5b2be0; font-weight: 500; }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .breadcrumb a { font-size: 13px; color: #7e8b9b; text-decoration: none; }
+    .breadcrumb a:hover { color: #4f46e5; }
+    .breadcrumb .sep { color: #ccc; font-size: 13px; }
+    .breadcrumb .current { color: #4f46e5; font-weight: 500; font-size: 13px; }
 
     /* Page Header */
     .page-header {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start; justify-content: space-between;
+      margin-bottom: 28px;
     }
-    .page-header h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
-    .page-header p { font-size: 13px; color: #6b6b80; }
-    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .page-header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .page-header p { font-size: 14px; color: #626d7d; max-width: 580px; line-height: 1.5; }
+    .header-actions { display: flex; gap: 12px; white-space: nowrap; flex-shrink: 0; }
 
     .btn-draft {
-      padding: 9px 18px; border-radius: 8px;
-      border: 1.5px solid #5b2be0; background: #fff;
-      color: #5b2be0; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: background 0.15s;
+      padding: 12px 24px; border-radius: 10px; border: 1px solid #dcdfe6; background: #fff;
+      color: #4a5568; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
     }
-    .btn-draft:hover { background: #f0ecff; }
+    .btn-draft:hover { background: #f5f6fa; border-color: #c0c4cc; }
 
     .btn-publish {
-      padding: 9px 18px; border-radius: 8px;
-      border: none; background: linear-gradient(135deg, #6d35f0, #4f46e5);
-      color: #fff; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: opacity 0.15s;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 24px;
+      border-radius: 10px; border: none;
+      background: #4f46e5; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: background 0.2s;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
     }
-    .btn-publish:hover { opacity: 0.9; }
+    .btn-publish:hover { background: #3f37c9; }
 
-    /* Two-column layout */
-    .form-grid { display: grid; grid-template-columns: 1fr 260px; gap: 18px; align-items: start; }
+    /* Forms matrix */
+    .form-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
 
-    /* Cards */
-    .card {
-      background: #fff; border: 1px solid #e8e8f0;
-      border-radius: 12px; padding: 22px 24px; margin-bottom: 16px;
+    /* Layout Cards */
+    .card { 
+      background: #fff;
+      border: 1px solid #eaedf3; border-radius: 14px; 
+      padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,.02);
     }
     .card:last-child { margin-bottom: 0; }
 
     .card-title {
-      display: flex; align-items: center; gap: 9px;
-      font-size: 15px; font-weight: 700; color: #1a1a2e;
-      margin-bottom: 20px;
+      display: flex;
+      align-items: center; gap: 12px; font-size: 16px; font-weight: 700; color: #1a1a2e;
+      margin-bottom: 24px;
     }
-    .card-title svg { width: 18px; height: 18px; color: #5b2be0; }
     .card-title .icon-wrap {
-      width: 30px; height: 30px; border-radius: 8px;
-      background: #f0ecff; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px; background: #f4f3ff;
+      display: flex; align-items: center; justify-content: center; color: #4f46e5;
     }
+    .card-title .icon-wrap svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* Form elements */
+    /* Inner Fields elements */
     label.field-label {
-      display: block; font-size: 11px; font-weight: 600;
-      color: #9b9bb0; text-transform: uppercase; letter-spacing: 0.6px;
-      margin-bottom: 7px;
+      display: block;
+      font-size: 11px; font-weight: 600; color: #7e8b9b;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
     }
 
     input[type="text"], input[type="number"], select {
-      width: 100%; padding: 9px 13px;
-      border: 1px solid #e8e8f0; border-radius: 8px;
-      font-size: 13.5px; color: #1a1a2e; background: #fff;
-      font-family: 'Inter', sans-serif; outline: none;
-      transition: border-color 0.15s;
+      width: 100%; padding: 11px 14px;
+      border: 1px solid #eaedf3; border-radius: 8px;
+      font-size: 14px; color: #2d3748; background: #fff; font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus {
-      border-color: #5b2be0;
+    input[type="text"]:focus, input[type="number"]:focus, select:focus { 
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
-    input::placeholder { color: #c0c0d0; }
 
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-    .form-row-single { margin-bottom: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .form-row-single { margin-bottom: 20px; }
 
-    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239b9bb0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer; }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237e8b9b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center; padding-right: 36px; cursor: pointer;
+    }
 
-    /* Engine type buttons */
-    .engine-label { font-size: 11px; font-weight: 600; color: #9b9bb0; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 9px; }
+    .engine-label { font-size: 11px; font-weight: 600; color: #7e8b9b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .engine-btns { display: flex; gap: 8px; flex-wrap: wrap; }
     .engine-btn {
-      padding: 7px 16px; border-radius: 20px;
-      border: 1.5px solid #e8e8f0; background: #fff;
-      font-size: 13px; font-weight: 500; color: #6b6b80;
-      cursor: pointer; font-family: 'Inter', sans-serif;
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #dcdfe6; background: #fff;
+      font-size: 13px; font-weight: 500; color: #4a5568; cursor: pointer; font-family: inherit;
       transition: all 0.15s;
     }
-    .engine-btn:hover { border-color: #5b2be0; color: #5b2be0; }
-    .engine-btn.active { background: #5b2be0; color: #fff; border-color: #5b2be0; }
+    .engine-btn:hover { background: #f5f6fa; border-color: #c0c4cc; color: #1a1a2e; }
+    .engine-btn.active { background: #4f46e5; color: #fff; border-color: #4f46e5; font-weight: 600; }
 
-    /* Spec inputs with unit */
     .input-unit-wrap { position: relative; }
-    .input-unit-wrap input { padding-right: 44px; }
-    .unit-label {
-      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-      font-size: 12px; font-weight: 600; color: #9b9bb0;
+    .input-unit-wrap input { padding-right: 55px; }
+    .unit-label { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 600; color: #a1aab7; }
+
+    /* Sticky Side Module Panel */
+    .pricing-card { 
+      background: #fff;
+      border: 1px solid #eaedf3; border-radius: 14px; padding: 24px;
+      position: sticky; top: 102px; box-shadow: 0 1px 2px rgba(0,0,0,.02);
     }
-
-    /* Pricing card */
-    .pricing-card { background: #fff; border: 1px solid #e8e8f0; border-radius: 12px; padding: 22px 20px; }
-
-    .billing-tabs { display: flex; border: 1px solid #e8e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 18px; }
+    .billing-tabs { display: flex; border: 1px solid #eaedf3; border-radius: 8px; overflow: hidden; margin-bottom: 20px; padding: 3px; background: #f5f6fa; }
     .billing-tab {
-      flex: 1; padding: 8px; text-align: center;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      border: none; background: #fff; color: #9b9bb0;
-      font-family: 'Inter', sans-serif; transition: all 0.15s;
+      flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer;
+      border: none; background: transparent; color: #626d7d; font-family: inherit; border-radius: 6px; transition: all 0.15s;
     }
-    .billing-tab.active { background: #1a1a2e; color: #fff; }
-    .billing-tab:hover:not(.active) { background: #f5f3ff; color: #5b2be0; }
+    .billing-tab.active { background: #4f46e5; color: #fff; }
 
-    .price-input-wrap { position: relative; margin-bottom: 4px; }
-    .currency-prefix {
-      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      font-size: 13px; font-weight: 600; color: #9b9bb0;
-    }
-    .price-input-wrap input { padding-left: 42px; font-size: 15px; font-weight: 600; }
+    .price-input-wrap { position: relative; margin-bottom: 16px; }
+    .currency-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 600; color: #7e8b9b; }
+    .price-input-wrap input { padding-left: 44px; font-size: 16px; font-weight: 700; color: #1a1a2e; }
 
-    .fee-row {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 12.5px; color: #9b9bb0; margin-top: 14px; margin-bottom: 6px;
-    }
-    .fee-row .fee-val { color: #ef4444; font-weight: 600; }
-
-    .earnings-row {
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .fee-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #7e8b9b; margin-top: 16px; margin-bottom: 12px; }
+    .fee-row .fee-val { color: #e74c3c; font-weight: 600; }
+    .earnings-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eaedf3; padding-top: 16px; margin-top: 14px; }
     .earnings-label { font-size: 14px; font-weight: 700; color: #1a1a2e; }
-    .earnings-val { font-size: 16px; font-weight: 700; color: #16a34a; }
+    .earnings-val { font-size: 19px; font-weight: 700; color: #27ae60; }
 
-    /* Media & Compliance */
+    /* Media Drag and Drop box layouts */
     .upload-photo-box {
-      width: 90px; height: 90px;
-      border: 2px dashed #d0d0e0; border-radius: 10px;
+      width: 100px;
+      height: 100px; border: 2px dashed #a1aab7; border-radius: 8px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; gap: 5px; transition: border-color 0.15s;
-      background: #fafafa;
+      cursor: pointer; gap: 6px; transition: border-color 0.15s, background-color 0.15s; background: #f5f6fa;
     }
-    .upload-photo-box:hover { border-color: #5b2be0; }
-    .upload-photo-box svg { width: 24px; height: 24px; color: #9b9bb0; }
-    .upload-photo-box span { font-size: 11px; color: #9b9bb0; font-weight: 500; }
+    .upload-photo-box:hover { border-color: #4f46e5; background-color: #f4f3ff; }
+    .upload-photo-box svg { width: 20px; height: 20px; color: #7e8b9b; stroke: currentColor; fill: none; stroke-width: 2; }
+    .upload-photo-box span { font-size: 11px; color: #7e8b9b; font-weight: 500; }
 
-    .doc-files { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .doc-files { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .doc-file-card { border: 1px solid #eaedf3; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+    .doc-meta { display: flex; align-items: center; gap: 12px; }
+    .doc-icon { width: 44px; height: 44px; border-radius: 8px; background: #fff0f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .doc-icon svg { width: 20px; height: 20px; stroke: #e74c3c; stroke-width: 2; fill: none; }
+    .doc-file-name { font-size: 14px; color: #1a1a2e; font-weight: 600; }
+    .doc-status { font-size: 12px; color: #7e8b9b; margin-top: 4px; display: flex; align-items: center; gap: 5px; }
+    .doc-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #27ae60; display: inline-block; }
+    .doc-action-btn { background: none; border: none; cursor: pointer; color: #b0b9c5; padding: 4px; display: flex; border-radius: 6px; }
+    .doc-action-btn:hover { background: #f0f0f5; color: #4a5568; }
+    .doc-action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    .doc-file-card {
-      border: 1px solid #e8e8f0; border-radius: 10px; padding: 12px 14px;
-    }
-    .doc-file-label { font-size: 10px; font-weight: 700; color: #9b9bb0; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-    .doc-file-content { display: flex; align-items: center; gap: 8px; }
-    .doc-file-content svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .doc-file-name { font-size: 12.5px; color: #1a1a2e; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .doc-check { color: #22c55e; }
-
-    .doc-upload-card {
-      border: 1px dashed #d0d0e0; border-radius: 10px; padding: 12px 14px;
-      cursor: pointer; transition: border-color 0.15s;
-    }
-    .doc-upload-card:hover { border-color: #5b2be0; }
-    .doc-upload-inner { display: flex; align-items: center; gap: 8px; }
-    .doc-upload-inner svg { width: 15px; height: 15px; color: #9b9bb0; }
-    .doc-upload-inner span { font-size: 12px; color: #9b9bb0; }
-
-    /* Chat FAB */
-    .chat-fab {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 48px; height: 48px; background: #1a1a2e;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-      transition: transform 0.15s;
-    }
-    .chat-fab:hover { transform: scale(1.07); }
-    .chat-fab svg { width: 22px; height: 22px; color: #fff; }
+    .doc-upload-card { border: 1px dashed #a1aab7; border-radius: 8px; padding: 12px 14px; cursor: pointer; background: #f5f6fa; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s; }
+    .doc-upload-card:hover { border-color: #4f46e5; }
+    .doc-upload-inner { display: flex; align-items: center; gap: 12px; width: 100%; }
+    .doc-icon-upload { width: 44px; height: 44px; border-radius: 8px; background: #eaf5ff; display: flex; align-items: center; justify-content: center; }
+    .doc-icon-upload svg { width: 20px; height: 20px; stroke: #3a86ff; stroke-width: 2; fill: none; }
+    .doc-upload-text-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .doc-upload-text-sub { font-size: 12px; color: #7e8b9b; margin-top: 4px; }
   </style>
 </head>
 <body>
 
-<!-- ── Sidebar ── -->
 <aside class="sidebar">
-  <div class="logo">
-    <div class="logo-inner">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="6" fill="#5b2be0"/>
-        <path d="M5 17L9 7l3 7 2-4 3 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="logo-text">Vroom<span>Nepal</span></span>
+  <a href="#" class="brand-container">
+    <img class="brand-logo-mark" src="image/logo.png" alt="VroomNepal Logo"/>
+    <div class="brand-name">
+      <span class="text-vroom">Vroom</span><span class="text-nepal">Nepal</span>
     </div>
-  </div>
+  </a>
 
   <nav>
     <a href="dashboard_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </a>
-    <a href="vehicle_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="1" y="3" width="15" height="13" rx="2"/>
-        <path d="M16 8h4l3 5v4h-7V8z"/>
-        <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-      </svg>
+    <a href="myvehicle_vendor.html">
+      <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><circle cx="15.5" cy="17.5" r="2.5"/><circle cx="5.5" cy="17.5" r="2.5"/></svg>
       My Vehicles
     </a>
-    <a href="addvehicle_vendor.html" class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-      </svg>
-      Add Vehicle
-    </a>
     <a href="booking_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
       Bookings
     </a>
+    <a href="addvehicle_vendor.html" class="active">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Vehicle
+    </a>
     <a href="earning_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23"/>
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       Earnings
     </a>
     <a href="document_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Documents
     </a>
     <a href="setting_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Settings
     </a>
   </nav>
 
   <div class="logout-wrap">
-    <a href="login_vendor.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-        <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-      </svg>
+    <a href="login.html">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Logout
     </a>
   </div>
 </aside>
 
-<!-- ── Main ── -->
 <div class="main">
 
-  <!-- Topbar -->
   <header class="topbar">
     <div class="search-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" placeholder="Search vehicle inventory..."/>
     </div>
     <div class="topbar-right">
       <button class="bell-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       </button>
       <div class="user-info">
         <div class="name-role">
@@ -384,19 +438,16 @@
     </div>
   </header>
 
-  <!-- Content -->
   <div class="content">
 
-    <!-- Breadcrumb -->
     <div class="breadcrumb">
       <a href="dashboard_vendor.html">Dashboard</a>
       <span class="sep">›</span>
-      <a href="vehicle_vendor.html">Fleet</a>
+      <a href="myvehicle_vendor.html">Fleet</a>
       <span class="sep">›</span>
       <span class="current">Add New Vehicle</span>
     </div>
 
-    <!-- Page Header -->
     <div class="page-header">
       <div>
         <h1>Expand Your Fleet</h1>
@@ -408,28 +459,20 @@
       </div>
     </div>
 
-    <!-- Two-column grid -->
     <div class="form-grid">
 
-      <!-- LEFT COLUMN -->
       <div>
-
-        <!-- Vehicle Details -->
         <div class="card">
           <div class="card-title">
             <div class="icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="3" width="15" height="13" rx="2"/>
-                <path d="M16 8h4l3 5v4h-7V8z"/>
-                <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><circle cx="15.5" cy="17.5" r="2.5"/><circle cx="5.5" cy="17.5" r="2.5"/></svg>
             </div>
             Vehicle Details
           </div>
 
           <div class="form-row-single">
             <label class="field-label">Vehicle Name</label>
-            <input type="text" placeholder="e.g. 2024 Porsche Taycan Turbo S"/>
+            <input type="text" placeholder="e.g. Hyundai Creta, Suzuki Swift, Mahindra Scorpio"/>
           </div>
 
           <div class="form-row">
@@ -438,18 +481,16 @@
               <select>
                 <option value="">Select Type</option>
                 <option>Sedan</option>
-                <option>SUV</option>
+                <option selected>SUV</option>
                 <option>Coupe</option>
                 <option>Hatchback</option>
-                <option>Convertible</option>
               </select>
             </div>
             <div>
               <label class="field-label">Category</label>
               <select>
-                <option value="luxury" selected>Luxury Sport</option>
-                <option>Economy</option>
-                <option>Standard</option>
+                <option value="luxury">Luxury Sport</option>
+                <option selected>Standard</option>
                 <option>Premium</option>
               </select>
             </div>
@@ -458,110 +499,92 @@
           <div>
             <div class="engine-label">Engine Type</div>
             <div class="engine-btns">
-              <button class="engine-btn active" onclick="setEngine(this)">Electric</button>
-              <button class="engine-btn" onclick="setEngine(this)">Petrol</button>
+              <button class="engine-btn" onclick="setEngine(this)">Electric</button>
+              <button class="engine-btn active" onclick="setEngine(this)">Petrol</button>
               <button class="engine-btn" onclick="setEngine(this)">Diesel</button>
               <button class="engine-btn" onclick="setEngine(this)">Hybrid</button>
             </div>
           </div>
         </div>
 
-        <!-- Technical Specifications -->
         <div class="card">
           <div class="card-title">
             <div class="icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2hz"></polygon><polyline points="2 17 12 22 22 17"></polyline></svg>
             </div>
             Technical Specifications
           </div>
 
           <div class="form-row">
             <div>
-              <label class="field-label">Range (WLTP)</label>
+              <label class="field-label">Fuel Efficiency / Range</label>
               <div class="input-unit-wrap">
-                <input type="number" value="450"/>
-                <span class="unit-label">KM</span>
+                <input type="number" step="0.1" value="14.2"/>
+                <span class="unit-label">km/l</span>
               </div>
             </div>
             <div>
-              <label class="field-label">Horsepower</label>
+              <label class="field-label">Horsepower / Displacement</label>
               <div class="input-unit-wrap">
-                <input type="number" value="750"/>
+                <input type="number" value="115"/>
                 <span class="unit-label">HP</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Media & Compliance -->
         <div class="card">
           <div class="card-title">
             <div class="icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </div>
             Media &amp; Compliance
           </div>
 
           <label class="field-label">Vehicle Images (High Resolution)</label>
           <div class="upload-photo-box" onclick="document.getElementById('photoInput').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="16"/>
-              <line x1="8" y1="12" x2="16" y2="12"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Add Photo</span>
           </div>
           <input type="file" id="photoInput" accept="image/*" style="display:none" multiple/>
 
           <div class="doc-files">
-            <!-- Registration Doc – uploaded -->
             <div class="doc-file-card">
-              <div class="doc-file-label">Registration Doc</div>
-              <div class="doc-file-content">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#5b2be0">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                </svg>
-                <span class="doc-file-name">reg_porsche_2024.pdf</span>
-                <svg class="doc-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
-                </svg>
+              <div class="doc-meta">
+                <div class="doc-icon">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div>
+                  <div class="doc-file-name">Bluebook_Copy.pdf</div>
+                  <div class="doc-status">Verified</div>
+                </div>
               </div>
+              <button class="doc-action-btn">
+                <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
             </div>
 
-            <!-- Insurance Policy – upload -->
             <div class="doc-upload-card" onclick="document.getElementById('insInput').click()">
-              <div class="doc-file-label">Insurance Policy</div>
               <div class="doc-upload-inner">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="16 16 12 12 8 16"/>
-                  <line x1="12" y1="12" x2="12" y2="21"/>
-                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-                </svg>
-                <span>Upload PDF or JPG</span>
+                <div class="doc-icon-upload">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div>
+                  <div class="doc-upload-text-title">Insurance Policy</div>
+                  <div class="doc-upload-text-sub">Upload PDF or JPG</div>
+                </div>
               </div>
             </div>
             <input type="file" id="insInput" accept=".pdf,.jpg,.jpeg" style="display:none"/>
           </div>
         </div>
+      </div>
 
-      </div><!-- /left -->
-
-      <!-- RIGHT COLUMN – Pricing -->
       <div>
         <div class="pricing-card">
           <div class="card-title" style="margin-bottom:16px;">
             <div class="icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
+              <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             Pricing Model
           </div>
@@ -572,32 +595,25 @@
             <button class="billing-tab active" onclick="setBilling(this)">Daily</button>
           </div>
 
-          <label class="field-label">Base Price (USD)</label>
+          <label class="field-label">Base Price</label>
           <div class="price-input-wrap" style="margin-top:8px;">
             <span class="currency-prefix">Rs.</span>
-            <input type="number" value="299.00" id="basePrice" oninput="calcEarnings()"/>
+            <input type="number" value="3500" id="basePrice" oninput="calcEarnings()"/>
           </div>
 
           <div class="fee-row">
             <span>VroomNepal Fee (8%)</span>
-            <span class="fee-val" id="feeVal">– Rs. 23.92</span>
+            <span class="fee-val" id="feeVal">– Rs. 280.00</span>
           </div>
           <div class="earnings-row">
             <span class="earnings-label">Estimated<br>Earnings</span>
-            <span class="earnings-val" id="earningsVal">Rs. 275.08</span>
+            <span class="earnings-val" id="earningsVal">Rs. 3220.00</span>
           </div>
         </div>
-      </div><!-- /right -->
+      </div>
 
-    </div><!-- /form-grid -->
-  </div><!-- /content -->
-</div><!-- /main -->
-
-<!-- Chat FAB -->
-<div class="chat-fab">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-  </svg>
+    </div>
+  </div>
 </div>
 
 <script>
