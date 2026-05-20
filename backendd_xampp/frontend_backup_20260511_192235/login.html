@@ -30,20 +30,12 @@
       align-items: center;
     }
 
-    /* Logo Image Optimization */
     .logo-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       margin-bottom: 26px;
-      width: 100%;
-    }
-
-    .logo-wrap img {
-      max-width: 140px;
-      height: auto;
-      object-fit: contain;
     }
 
     .logo-text {
@@ -52,7 +44,6 @@
       color: #5b5fc7;
     }
 
-    /* Fields */
     .field {
       width: 100%;
       margin-bottom: 14px;
@@ -67,7 +58,6 @@
       margin-bottom: 6px;
     }
 
-    /* Shadow border on input container */
     .input-wrap {
       position: relative;
       display: flex;
@@ -108,9 +98,7 @@
       outline: none;
     }
 
-    .field input::placeholder {
-      color: #c8c8d8;
-    }
+    .field input::placeholder { color: #c8c8d8; }
 
     .eye-btn {
       position: absolute;
@@ -133,7 +121,6 @@
       stroke-linejoin: round;
     }
 
-    /* Forgot */
     .forgot {
       width: 100%;
       text-align: right;
@@ -150,7 +137,6 @@
 
     .forgot a:hover { text-decoration: underline; }
 
-    /* Login btn */
     .btn {
       width: 100%;
       padding: 12px;
@@ -163,13 +149,13 @@
       font-family: 'Inter', sans-serif;
       cursor: pointer;
       margin-bottom: 12px;
-      transition: background 0.2s;
+      transition: background 0.2s, opacity 0.2s;
       box-shadow: 0 4px 14px rgba(91, 95, 199, 0.30);
     }
 
-    .btn:hover { background: #4a4eb6; }
+    .btn:hover:not(:disabled) { background: #4a4eb6; }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; }
 
-    /* Google btn */
     .btn-google {
       width: 100%;
       padding: 11px;
@@ -191,14 +177,8 @@
     }
 
     .btn-google:hover { background: #ededf8; }
+    .btn-google svg { width: 17px; height: 17px; flex-shrink: 0; }
 
-    .btn-google svg {
-      width: 17px;
-      height: 17px;
-      flex-shrink: 0;
-    }
-
-    /* Signup */
     .signup {
       font-size: 12px;
       color: #888899;
@@ -225,29 +205,66 @@
       min-height: 15px;
       display: block;
     }
+
+    /* API error / success banner */
+    .api-msg {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      display: none;
+      text-align: center;
+    }
+
+    .api-msg.error {
+      background: #fef0f0;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .api-msg.success {
+      background: #f0fef4;
+      color: #1a7a3a;
+      border: 1px solid #b7eac7;
+      display: block;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
 
+    <!-- Logo -->
     <div class="logo-wrap">
-      <img src="logo.png" alt="VroomNepal Logo" onerror="this.style.display='none'; document.getElementById('logo-text-fallback').style.letterSpacing='normal';">
-      <span class="logo-text" id="logo-text-fallback">VroomNepal</span>
+      <svg width="54" height="54" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="28" fill="#eeeeff"/>
+        <polyline points="10,18 19,38 28,22" fill="none" stroke="#5b5fc7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="28,22 37,38 46,18" fill="none" stroke="#5b5fc7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="14" y1="41" x2="42" y2="41" stroke="#5b5fc7" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-text">VroomNepal</span>
     </div>
 
+    <!-- API message banner -->
+    <div class="api-msg" id="apiMsg"></div>
+
+    <!-- Email -->
     <div class="field">
-      <label for="username">Email Address</label>
+      <label for="username">Email</label>
       <div class="input-wrap" id="emailWrap">
         <svg class="input-icon" viewBox="0 0 24 24">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
           <polyline points="2,4 12,13 22,4"/>
         </svg>
-        <input id="username" type="text" placeholder="johndoe@gmail.com" oninput="clearErr('emailWrap','emailErr')"/>
+        <input id="username" type="email" placeholder="johndoe@gmail.com" oninput="clearErr('emailWrap','emailErr')"/>
       </div>
       <span class="field-error" id="emailErr"></span>
     </div>
 
+    <!-- Password -->
     <div class="field">
       <label for="password">Password</label>
       <div class="input-wrap" id="pwdWrap">
@@ -266,12 +283,15 @@
       <span class="field-error" id="pwdErr"></span>
     </div>
 
+    <!-- Forgot -->
     <div class="forgot">
       <a href="forgotPassword.html">Forgot password?</a>
     </div>
 
-    <button class="btn" onclick="handleLogin()">Login</button>
+    <!-- Login -->
+    <button class="btn" id="loginBtn" onclick="handleLogin()">Login</button>
 
+    <!-- Google -->
     <button class="btn-google">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
         <path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.8-6.8C35.9 2.4 30.5 0 24 0 14.6 0 6.5 5.4 2.6 13.2l8 6.2C12.4 13.7 17.7 9.5 24 9.5z"/>
@@ -282,6 +302,7 @@
       Continue with Google
     </button>
 
+    <!-- Signup -->
     <div class="signup">
       Don't have an account?<a href="signup.html">Sign Up</a>
     </div>
@@ -289,9 +310,12 @@
   </div>
 
   <script>
-    // Strict regex validation ensures it doesn't begin with a number or symbol
-    const emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // ─── Config ────────────────────────────────────────────────────────────────
+    const API_BASE = 'http://localhost:5001/api';
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // ─── Helpers ───────────────────────────────────────────────────────────────
     function showErr(wrapId, errId, msg) {
       document.getElementById(wrapId).classList.add('error');
       document.getElementById(errId).textContent = msg;
@@ -302,8 +326,29 @@
       document.getElementById(errId).textContent = '';
     }
 
-    function handleLogin() {
-      const email = document.getElementById('username').value.trim();
+    function showApiMsg(msg, type) {
+      const el = document.getElementById('apiMsg');
+      el.textContent = msg;
+      el.className = 'api-msg ' + type;
+    }
+
+    function hideApiMsg() {
+      const el = document.getElementById('apiMsg');
+      el.className = 'api-msg';
+      el.textContent = '';
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Logging in…' : 'Login';
+    }
+
+    // ─── Login handler ─────────────────────────────────────────────────────────
+    async function handleLogin() {
+      hideApiMsg();
+
+      const email    = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       let valid = true;
 
@@ -311,8 +356,7 @@
         showErr('emailWrap', 'emailErr', 'Please enter your email address.');
         valid = false;
       } else if (!emailRegex.test(email)) {
-        // Blocks usernames starting with numbers or improper formats
-        showErr('emailWrap', 'emailErr', 'Please enter a valid email (must start with a letter).');
+        showErr('emailWrap', 'emailErr', 'Please enter a valid email address.');
         valid = false;
       }
 
@@ -324,14 +368,50 @@
         valid = false;
       }
 
-      if (valid) {
-        alert('Logging in...');
+      if (!valid) return;
+
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          showApiMsg(data.message || 'Login failed. Please try again.', 'error');
+          return;
+        }
+
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        showApiMsg('Login successful! Redirecting…', 'success');
+
+        // Redirect after short delay — update path to your dashboard page
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+
+      } catch (err) {
+        showApiMsg('Cannot connect to server. Make sure the backend is running on port 5001.', 'error');
+      } finally {
+        setLoading(false);
       }
     }
 
+    // Allow Enter key to submit
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    // ─── Password toggle ───────────────────────────────────────────────────────
     function togglePassword() {
       const input = document.getElementById('password');
-      const icon = document.getElementById('eyeIcon');
+      const icon  = document.getElementById('eyeIcon');
       if (input.type === 'password') {
         input.type = 'text';
         icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;

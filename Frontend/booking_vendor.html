@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bookings Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f5f6fa; color: #1a1a2e; display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 200px; min-width: 200px; background: #fff;
+    display: flex; flex-direction: column;
+    border-right: 1px solid #eee; padding: 18px 0; position: fixed;
+    top: 0; left: 0; height: 100vh; z-index: 100;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 18px 22px 18px; border-bottom: 1px solid #f0f0f0;
+  }
+  .logo-icon {
+    width: 32px; height: 32px; background: #6c63ff;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+  .logo-text { font-size: 13px; font-weight: 700; color: #1a1a2e; line-height: 1.2; }
+  .logo-text span { display: block; font-size: 10px; font-weight: 400; color: #aaa; }
+
+  .nav { flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: #666;
+    text-decoration: none; transition: background .15s, color .15s;
+  }
+  .nav a:hover { background: #f4f3ff; color: #6c63ff; }
+  .nav a.active { background: #6c63ff; color: #fff; }
+  .nav a svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav a.active svg { fill: #fff; }
+  .nav a:not(.active) svg { fill: #888; }
+
+  .sidebar-bottom { padding: 10px; border-top: 1px solid #f0f0f0; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-bottom a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: #666;
+    text-decoration: none; transition: background .15s;
+  }
+  .sidebar-bottom a:hover { background: #f4f3ff; color: #6c63ff; }
+  .sidebar-bottom a svg { width: 16px; height: 16px; fill: #888; }
+
+  /* ── MAIN ── */
+  .main { margin-left: 200px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar {
+    background: #fff; border-bottom: 1px solid #eee;
+    padding: 12px 28px; display: flex; align-items: center;
+    justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50;
+  }
+  .search-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: #f5f6fa; border-radius: 8px; padding: 8px 14px;
+    width: 240px;
+  }
+  .search-wrap svg { width: 15px; height: 15px; fill: #bbb; flex-shrink: 0; }
+  .search-wrap input {
+    border: none; background: transparent; outline: none;
+    font-size: 12.5px; color: #555; width: 100%;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .notif-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #f5f6fa; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .notif-btn svg { width: 16px; height: 16px; fill: #888; }
+  .notif-dot {
+    width: 7px; height: 7px; background: #ff4757;
+    border-radius: 50%; position: absolute; top: 5px; right: 5px;
+    border: 1.5px solid #fff;
+  }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #6c63ff; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700; color: #fff;
+  }
+  .user-info { line-height: 1.3; }
+  .user-info .name { font-size: 12.5px; font-weight: 600; color: #1a1a2e; }
+  .user-info .role { font-size: 10.5px; color: #aaa; }
+
+  /* ── CONTENT ── */
+  .content { padding: 28px; flex: 1; }
+
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+  .page-title { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+  .page-sub { font-size: 12.5px; color: #aaa; margin-top: 3px; max-width: 380px; line-height: 1.5; }
+  .btn-add {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #6c63ff; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .btn-add svg { width: 18px; height: 18px; fill: #fff; }
+
+  /* STAT CARDS */
+  .stat-row { display: flex; gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: #fff; border-radius: 12px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px; flex: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+  .stat-card.highlight { background: #6c63ff; }
+  .stat-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .stat-icon.blue { background: #e8f4ff; }
+  .stat-icon.green { background: #e8fff3; }
+  .stat-icon.purple { background: rgba(255,255,255,.2); }
+  .stat-icon.yellow { background: #fffbe8; }
+  .stat-icon svg { width: 20px; height: 20px; }
+  .stat-info .label { font-size: 11px; color: #aaa; font-weight: 500; margin-bottom: 4px; }
+  .stat-card.highlight .stat-info .label { color: rgba(255,255,255,.75); }
+  .stat-info .value { font-size: 22px; font-weight: 700; color: #1a1a2e; line-height: 1; }
+  .stat-card.highlight .stat-info .value { color: #fff; font-size: 18px; }
+
+  /* TABS */
+  .tabs-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 2px; background: #f0f0f5; border-radius: 8px; padding: 3px; }
+  .tab {
+    padding: 6px 14px; border-radius: 6px; font-size: 12.5px;
+    font-weight: 500; cursor: pointer; color: #777; border: none;
+    background: transparent; transition: background .15s, color .15s;
+  }
+  .tab.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .tab-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px; font-size: 12.5px;
+    font-weight: 500; cursor: pointer; border: 1px solid #e5e5e5;
+    background: #fff; color: #555; transition: background .15s;
+  }
+  .btn-sm:hover { background: #f5f6fa; }
+  .btn-sm svg { width: 14px; height: 14px; fill: #888; }
+
+  /* TABLE */
+  .table-wrap {
+    background: #fff; border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05); overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid #f0f0f0; }
+  thead th {
+    font-size: 11px; font-weight: 600; color: #aaa;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 13px 16px; text-align: left;
+  }
+  tbody tr { border-bottom: 1px solid #f9f9f9; transition: background .1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fafafa; }
+  tbody td { padding: 12px 16px; font-size: 13px; color: #333; vertical-align: middle; }
+
+  .customer-cell { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .cust-name { font-size: 12.5px; font-weight: 600; color: #1a1a2e; line-height: 1.2; }
+  .cust-id { font-size: 11px; color: #bbb; }
+
+  .vehicle-name { font-size: 12.5px; font-weight: 500; color: #333; }
+  .schedule-text { font-size: 12px; color: #666; line-height: 1.5; }
+  .amount { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge.pending { background: #fff4e5; color: #f5a623; }
+  .badge.approved { background: #e8fff3; color: #27ae60; }
+  .badge.completed { background: #f0f0f5; color: #888; }
+  .badge.cancelled { background: #ffe8e8; color: #e74c3c; }
+
+  .action-btn {
+    background: none; border: none; cursor: pointer; padding: 4px;
+    border-radius: 4px; color: #bbb; font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .action-btn:hover { background: #f0f0f5; color: #555; }
+
+  /* PAGINATION */
+  .pagination-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-top: 1px solid #f0f0f0;
+  }
+  .showing-text { font-size: 12px; color: #aaa; }
+  .pages { display: flex; gap: 4px; }
+  .page-btn {
+    width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e5e5;
+    background: #fff; font-size: 12px; font-weight: 500; color: #666;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .page-btn.active { background: #6c63ff; color: #fff; border-color: #6c63ff; }
+  .page-btn:hover:not(.active) { background: #f5f6fa; }
+  .page-btn svg { width: 12px; height: 12px; fill: #888; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="logo-text">VroomVault<span>Premium Fleet</span></div>
+  </div>
+
+  <nav class="nav">
+    <a href="dashboard_vendor.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a href="myvehicle_vendor.html">
+      <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><circle cx="15.5" cy="17.5" r="2.5"/><circle cx="5.5" cy="17.5" r="2.5"/></svg>
+      My Vehicles
+    </a>
+    <a href="addvehicle_vendor.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Vehicle
+    </a>
+    <a href="booking_vendor.html" class="active">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      Bookings
+    </a>
+    <a href="earning_vendor.html">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Earnings
+    </a>
+    <a href="document_vendor.html">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Documents
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <a href="setting_vendor.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Settings
+    </a>
+    <a href="login_vendor.html">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search bookings..."/>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="user-chip">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="name">Jane Doe</div>
+          <div class="role">Vendor</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Bookings Management</div>
+        <div class="page-sub">Monitor your fleet's activity. Oversee incoming requests, active rentals, and finalize completed journeys in our premium concierge panel.</div>
+      </div>
+      <button class="btn-add">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3a86ff" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="label">Pending Approvals</div>
+          <div class="value">04</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="label">Approved Today</div>
+          <div class="value">12</div>
+        </div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-icon purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="label">Estimated Earnings</div>
+          <div class="value">Rs.2,44,850<br/>.00</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon yellow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="label">Vendor Rating</div>
+          <div class="value">4.92</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS + ACTIONS -->
+    <div class="tabs-row">
+      <div class="tabs">
+        <button class="tab active">All Bookings</button>
+        <button class="tab">Pending</button>
+        <button class="tab">Approved</button>
+        <button class="tab">Completed</button>
+        <button class="tab">Cancelled</button>
+      </div>
+      <div class="tab-actions">
+        <button class="btn-sm">
+          <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filter
+        </button>
+        <button class="btn-sm">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Vehicle</th>
+            <th>Schedule</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsBody"></tbody>
+      </table>
+      <div class="pagination-row">
+        <span class="showing-text">Showing 1-18 of 98 results</span>
+        <div class="pages">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+const bookings = [
+  { initials:'SM', color:'#6c63ff', name:'Sophia Mitchell',  vehicle:'Tesla Model S',      schedule:'Oct 12 - Oct 15, 2023', amount:'Rs.1,450.00', status:'pending'   },
+  { initials:'MT', color:'#3a86ff', name:'Marcus Thorne',    vehicle:'Porsche 911',        schedule:'Oct 14 - Oct 19, 2023', amount:'Rs.2,100.00', status:'pending'   },
+  { initials:'OB', color:'#27ae60', name:'Oliver Bennett',   vehicle:'Range Rover Sport',  schedule:'Oct 05 - Oct 10, 2023', amount:'Rs.3,200.00', status:'approved'  },
+  { initials:'IR', color:'#e74c3c', name:'Isabella Rossi',   vehicle:'Audi RS7',           schedule:'Oct 09 - Oct 13, 2023', amount:'Rs.1,100.00', status:'approved'  },
+  { initials:'NS', color:'#f39c12', name:'Noah Smith',       vehicle:'Kinetic Tensile K',  schedule:'Sep 28 - Oct 03, 2023', amount:'Rs.4,500.00', status:'completed' },
+  { initials:'MG', color:'#9b59b6', name:'Mia Garcia',       vehicle:'Kinetic O-Sprint',   schedule:'Sep 25 - Sep 27, 2023', amount:'Rs.860.00',  status:'completed' },
+  { initials:'EH', color:'#e67e22', name:'Ethan Hunt',       vehicle:'Escalade ESV',       schedule:'Oct 10 - Oct 13, 2023', amount:'Rs.2,800.00', status:'cancelled' },
+  { initials:'HV', color:'#1abc9c', name:'Harper Vance',     vehicle:'BMW M8',             schedule:'Oct 05 - Oct 07, 2023', amount:'Rs.1,900.00', status:'cancelled' },
+  { initials:'ER', color:'#3498db', name:'Elena Rodriguez',  vehicle:'Lucid Air',          schedule:'Oct 20 - Oct 25, 2023', amount:'Rs.2,400.00', status:'pending'   },
+  { initials:'JW', color:'#e74c3c', name:'Jameson Wu',       vehicle:'BMW M4',             schedule:'Oct 18 - Oct 21, 2023', amount:'Rs.1,750.00', status:'pending'   },
+  { initials:'LC', color:'#27ae60', name:'Liam Chen',        vehicle:'Kinetic Volt X',     schedule:'Oct 11 - Oct 15, 2023', amount:'Rs.1,250.00', status:'approved'  },
+  { initials:'AD', color:'#f39c12', name:'Ava Dubois',       vehicle:'Kinetic E-Core',     schedule:'Oct 15 - Oct 18, 2023', amount:'Rs.1,600.00', status:'approved'  },
+  { initials:'LM', color:'#9b59b6', name:'Lucas Müller',     vehicle:'Mercedes-AMG G63',   schedule:'Sep 30 - Sep 23, 2023', amount:'Rs.6,400.00', status:'completed' },
+  { initials:'CL', color:'#e67e22', name:'Chloe Lefebvre',   vehicle:'Taycan Turbo S',     schedule:'Sep 15 - Sep 18, 2023', amount:'Rs.3,000.00', status:'completed' },
+  { initials:'MR', color:'#6c63ff', name:'Mason Reed',       vehicle:'Range Rover',        schedule:'Oct 11 - Oct 14, 2023', amount:'Rs.1,400.00', status:'cancelled' },
+  { initials:'EC', color:'#3a86ff', name:'Evelyn Clarke',    vehicle:'Aether Velocity',    schedule:'Oct 01 - Oct 05, 2023', amount:'Rs.2,250.00', status:'cancelled' },
+];
+
+const statusLabel = { pending:'Pending', approved:'Approved', completed:'Completed', cancelled:'Cancelled' };
+const tbody = document.getElementById('bookingsBody');
+
+bookings.forEach(b => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <div class="customer-cell">
+        <div class="avatar" style="background:${b.color}">${b.initials}</div>
+        <div>
+          <div class="cust-name">${b.name}</div>
+        </div>
+      </div>
+    </td>
+    <td><div class="vehicle-name">${b.vehicle}</div></td>
+    <td><div class="schedule-text">${b.schedule}</div></td>
+    <td><div class="amount">${b.amount}</div></td>
+    <td><span class="badge ${b.status}">${statusLabel[b.status]}</span></td>
+    <td><button class="action-btn">⋮</button></td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
