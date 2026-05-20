@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Documents – VroomNepal Vendor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,7 +19,7 @@
 
     /* ── Sidebar ── */
     .sidebar {
-      width: 155px;
+      width: 260px;
       background: #fff;
       border-right: 1px solid #e8e8f0;
       display: flex;
@@ -28,31 +28,46 @@
       flex-shrink: 0;
     }
 
-    .logo {
-      padding: 18px 16px 16px;
+    /* Fixed Logo Branding Header Wrapper Structure */
+    .sidebar-brand-wrapper {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
       border-bottom: 1px solid #f0f0f5;
+      gap: 10px;
     }
-    .logo img { height: 28px; }
-    .logo-text {
+    .brand-logo-img {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+    }
+    .brand-text {
+      font-family: 'Syne', sans-serif;
       font-size: 18px;
-      font-weight: 700;
-      color: #5b2be0;
-      letter-spacing: -0.5px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      color: #1a1a2e;
+      line-height: 1;
     }
-    .logo-text span { color: #1a1a2e; }
+    .brand-text span {
+      color: #7c5cf6;
+      font-weight: 400;
+    }
 
-    nav { flex: 1; padding: 10px 0; }
+    nav { flex: 1; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; }
 
     nav a {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      font-size: 13.5px;
+      gap: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
       font-weight: 500;
       color: #6b6b80;
       text-decoration: none;
-      border-radius: 0;
       transition: background 0.15s, color 0.15s;
       position: relative;
     }
@@ -65,30 +80,30 @@
     nav a.active::before {
       content: '';
       position: absolute;
-      left: 0; top: 4px; bottom: 4px;
+      left: 0; top: 0; bottom: 0;
       width: 3px;
       background: #5b2be0;
-      border-radius: 0 3px 3px 0;
     }
 
-    nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
+    nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
 
     .logout-wrap {
-      padding: 14px 16px;
+      padding: 14px 20px;
       border-top: 1px solid #f0f0f5;
     }
     .logout-wrap a {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 13.5px;
+      gap: 12px;
+      padding: 12px 0;
+      font-size: 14px;
       font-weight: 500;
       color: #6b6b80;
       text-decoration: none;
       transition: color 0.15s;
     }
-    .logout-wrap a:hover { color: #e53e3e; }
-    .logout-wrap svg { width: 17px; height: 17px; }
+    .logout-wrap a:hover { color: #ff4757; }
+    .logout-wrap svg { width: 18px; height: 18px; }
 
     /* ── Main ── */
     .main {
@@ -98,12 +113,12 @@
       overflow: hidden;
     }
 
-    /* ── Topbar ── */
+    /* ── Topbar Search Platform Architecture ── */
     .topbar {
       background: #fff;
       border-bottom: 1px solid #e8e8f0;
-      padding: 0 28px;
-      height: 58px;
+      padding: 0 32px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -112,27 +127,53 @@
 
     .search-wrap {
       position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-field-control {
       width: 260px;
-    }
-    .search-wrap svg {
-      position: absolute;
-      left: 11px; top: 50%;
-      transform: translateY(-50%);
-      color: #b0b0c0;
-      width: 15px; height: 15px;
-    }
-    .search-wrap input {
-      width: 100%;
-      padding: 8px 12px 8px 34px;
+      height: 36px;
+      background-color: #f8f9fa;
       border: 1px solid #e8e8f0;
       border-radius: 8px;
+      padding: 0 42px 0 14px;
+      font-family: inherit;
       font-size: 13px;
-      color: #6b6b80;
-      background: #fafafa;
+      color: #1a1a2e;
       outline: none;
-      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, background-color 0.2s;
     }
-    .search-wrap input::placeholder { color: #b0b0c0; }
+    .search-field-control:focus {
+      border-color: #5b2be0;
+      background-color: #fff;
+    }
+    .search-action-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #5b2be0;
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: background-color 0.15s;
+    }
+    .search-action-btn:hover {
+      background-color: #4a1fc0;
+    }
+    .search-action-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+    }
 
     .topbar-right {
       display: flex;
@@ -165,10 +206,7 @@
       overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-placeholder {
-      font-size: 14px; font-weight: 700; color: #5b2be0;
-    }
+    .avatar-placeholder { font-size: 14px; font-weight: 700; color: #5b2be0; }
 
     /* ── Content ── */
     .content {
@@ -241,15 +279,9 @@
       font-weight: 600;
       text-align: center;
     }
-    .stat-total {
-      background: #f0f0f8;
-      color: #6b6b80;
-    }
+    .stat-total { background: #f0f0f8; color: #6b6b80; }
     .stat-total span { display: block; font-size: 16px; font-weight: 700; color: #1a1a2e; }
-    .stat-current {
-      background: #e9faf0;
-      color: #16a34a;
-    }
+    .stat-current { background: #e9faf0; color: #16a34a; }
     .stat-current span { display: block; font-size: 16px; font-weight: 700; color: #16a34a; }
 
     /* Document Cards */
@@ -263,10 +295,12 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      transition: opacity 0.2s, transform 0.2s;
     }
 
     .doc-icon {
-      width: 44px; height: 44px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
       background: #f5f3ff;
       display: flex; align-items: center; justify-content: center;
@@ -283,11 +317,7 @@
     .doc-info p { font-size: 12px; color: #9b9bb0; }
     .doc-info p.rejected-text { color: #ef4444; }
 
-    .doc-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .doc-actions { display: flex; align-items: center; gap: 10px; }
 
     .status-badge {
       display: flex;
@@ -330,6 +360,18 @@
     }
     .replace-btn:hover { background: #4a1fc0; }
 
+    /* No items found container */
+    #noResultsMessage {
+      text-align: center;
+      padding: 40px;
+      color: #6b6b80;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e8e8f0;
+      display: none;
+    }
+
     /* Chat bubble */
     .chat-fab {
       position: fixed;
@@ -348,17 +390,10 @@
 </head>
 <body>
 
-<!-- ── Sidebar ── -->
 <aside class="sidebar">
-  <div class="logo">
-    <!-- VroomNepal logo text approximation -->
-    <div style="display:flex;align-items:center;gap:6px;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="6" fill="#5b2be0"/>
-        <path d="M5 17L9 7l3 7 2-4 3 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span style="font-size:14px;font-weight:700;color:#5b2be0;letter-spacing:-0.3px;">Vroom<span style="color:#1a1a2e;">Nepal</span></span>
-    </div>
+  <div class="sidebar-brand-wrapper">
+    <img src="image/logo.png" alt="VroomNepal Logo" class="brand-logo-img">
+    <div class="brand-text">Vroom<span>Nepal</span></div>
   </div>
 
   <nav>
@@ -369,7 +404,7 @@
       </svg>
       Dashboard
     </a>
-    <a href="vehicle_vendor.html">
+    <a href="myvehicle_vendor.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="1" y="3" width="15" height="13" rx="2"/>
         <path d="M16 8h4l3 5v4h-7V8z"/>
@@ -390,7 +425,7 @@
       </svg>
       Bookings
     </a>
-    <a href="earnings_vendor.html">
+    <a href="earning_vendor.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
       </svg>
@@ -403,17 +438,17 @@
       </svg>
       Documents
     </a>
-    <a href="settings_vendor.html">
+    <a href="setting_vendor.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
       Settings
     </a>
   </nav>
 
   <div class="logout-wrap">
-    <a href="login_vendor.html">
+    <a href="login.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
@@ -423,16 +458,14 @@
   </div>
 </aside>
 
-<!-- ── Main ── -->
 <div class="main">
 
-  <!-- Topbar -->
   <header class="topbar">
     <div class="search-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" placeholder="Search documentation..."/>
+      <input type="text" id="docSearchInput" placeholder="Search documentation..." class="search-field-control"/>
+      <button class="search-action-btn" id="searchTriggerBtn" aria-label="Submit Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
     </div>
     <div class="topbar-right">
       <button class="bell-btn">
@@ -453,10 +486,8 @@
     </div>
   </header>
 
-  <!-- Content -->
   <div class="content">
 
-    <!-- Verified Banner -->
     <div class="verified-banner">
       <div class="verified-left">
         <div class="check-circle">
@@ -472,7 +503,6 @@
       <button class="badge-btn">View Digital Badge</button>
     </div>
 
-    <!-- Section Header -->
     <div class="section-header">
       <div>
         <h2>Required Documents</h2>
@@ -480,21 +510,21 @@
       </div>
       <div class="doc-stats">
         <div class="stat-badge stat-total">
-          <span>3</span>
+          <span id="totalDocsCount">3</span>
           TOTAL
         </div>
         <div class="stat-badge stat-current">
-          <span>ALL</span>
+          <span id="currentDocsStatus">ALL</span>
           CURRENT
         </div>
       </div>
     </div>
 
-    <!-- Document List -->
-    <div class="doc-list">
+    <div id="noResultsMessage">No documents match your query filter parameter.</div>
 
-      <!-- National ID/Passport – Verified -->
-      <div class="doc-card">
+    <div class="doc-list" id="documentCardsContainer">
+
+      <div class="doc-card" data-title="national id passport">
         <div class="doc-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -522,8 +552,7 @@
         </div>
       </div>
 
-      <!-- Driving License – Pending -->
-      <div class="doc-card">
+      <div class="doc-card" data-title="driving license">
         <div class="doc-icon pending-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -551,8 +580,7 @@
         </div>
       </div>
 
-      <!-- Business License – Rejected -->
-      <div class="doc-card">
+      <div class="doc-card" data-title="business license">
         <div class="doc-icon rejected-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -577,15 +605,50 @@
       </div>
 
     </div>
-  </div><!-- /content -->
-</div><!-- /main -->
-
-<!-- Chat FAB -->
-<div class="chat-fab">
+  </div></div><div class="chat-fab">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
   </svg>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('docSearchInput');
+    const searchBtn = document.getElementById('searchTriggerBtn');
+    const docCards = document.querySelectorAll('.doc-card');
+    const noResults = document.getElementById('noResultsMessage');
+
+    function executeLocalSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      docCards.forEach(card => {
+        const titleAttr = card.getAttribute('data-title') || '';
+        if (titleAttr.includes(query)) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (visibleCount === 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    }
+
+    // Trigger on type
+    searchInput.addEventListener('input', executeLocalSearch);
+
+    // Trigger on search button click
+    searchBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      executeLocalSearch();
+    });
+  });
+</script>
 </body>
 </html>
+
