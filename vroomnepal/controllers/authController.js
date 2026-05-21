@@ -20,6 +20,7 @@ const resolveRequestedRole = (role) => {
   const requestedRole = String(role || 'user').trim().toLowerCase();
   return allowedRoles.includes(requestedRole) ? requestedRole : 'user';
 };
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // ─── Nodemailer transporter ────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -143,40 +144,52 @@ exports.forgotPassword = async (req, res, next) => {
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // OTP expires in 10 minutes
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-    const expiresAtMySQL = expiresAt.toISOString().slice(0, 19).replace('T', ' ');
-
     // Delete any previous unused OTPs for this email
     await db.execute('DELETE FROM password_otps WHERE email = ?', [email]);
 
     // Save OTP to database
     await db.execute(
-      'INSERT INTO password_otps (email, otp, expires_at) VALUES (?, ?, ?)',
-      [email, otp, expiresAtMySQL]
+      'INSERT INTO password_otps (email, otp, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))',
+      [email, otp]
     );
 
-    // Send OTP email
-    await transporter.sendMail({
-      from: `"VroomNepal" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: 'Your VroomNepal Password Reset OTP',
-      html: `
-        <div style="font-family: Inter, sans-serif; max-width: 420px; margin: auto; padding: 32px; background: #f8f8ff; border-radius: 16px;">
-          <h2 style="color: #5b5fc7; text-align: center; margin-bottom: 8px;">VroomNepal</h2>
-          <p style="color: #333; font-size: 15px; text-align: center;">Your password reset OTP is:</p>
-          <div style="text-align: center; margin: 24px 0;">
-            <span style="font-size: 40px; font-weight: 700; letter-spacing: 12px; color: #5b5fc7;">${otp}</span>
-          </div>
-          <p style="color: #888; font-size: 13px; text-align: center;">This OTP expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
-          <p style="color: #bbb; font-size: 12px; text-align: center; margin-top: 24px;">If you didn't request this, you can safely ignore this email.</p>
-        </div>
-      `,
-    });
+    let emailSent = false;
+    let mailError = null;
+    if (process.env.MAIL_USER && process.env.MAIL_PASS) {
+      try {
+        await transporter.sendMail({
+          from: `"VroomNepal" <${process.env.MAIL_USER}>`,
+          to: email,
+          subject: 'Your VroomNepal Password Reset OTP',
+          html: `
+            <div style="font-family: Inter, sans-serif; max-width: 420px; margin: auto; padding: 32px; background: #f8f8ff; border-radius: 16px;">
+              <h2 style="color: #5b5fc7; text-align: center; margin-bottom: 8px;">VroomNepal</h2>
+              <p style="color: #333; font-size: 15px; text-align: center;">Your password reset OTP is:</p>
+              <div style="text-align: center; margin: 24px 0;">
+                <span style="font-size: 40px; font-weight: 700; letter-spacing: 12px; color: #5b5fc7;">${otp}</span>
+              </div>
+              <p style="color: #888; font-size: 13px; text-align: center;">This OTP expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
+              <p style="color: #bbb; font-size: 12px; text-align: center; margin-top: 24px;">If you didn't request this, you can safely ignore this email.</p>
+            </div>
+          `,
+        });
+        emailSent = true;
+      } catch (error) {
+        mailError = error;
+      }
+    }
+
+    if (!emailSent && !isDevelopment) {
+      throw mailError || new Error('Mail service is not configured');
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'OTP sent to your email. Valid for 10 minutes.',
+      message: emailSent
+        ? 'OTP sent to your email. Valid for 10 minutes.'
+        : 'Email is unavailable in development. Use the OTP shown below.',
+      emailSent,
+      ...(isDevelopment && !emailSent ? { otp } : {}),
     });
 
   } catch (error) {
@@ -194,7 +207,7 @@ exports.verifyOtp = async (req, res, next) => {
     }
 
     const [rows] = await db.execute(
-      'SELECT * FROM password_otps WHERE email = ? AND otp = ? AND used = FALSE ORDER BY created_at DESC LIMIT 1',
+      'SELECT *, expires_at <= NOW() AS expired FROM password_otps WHERE email = ? AND otp = ? AND used = FALSE ORDER BY created_at DESC LIMIT 1',
       [email, otp]
     );
 
@@ -205,7 +218,7 @@ exports.verifyOtp = async (req, res, next) => {
     const record = rows[0];
 
     // Check expiry
-    if (new Date() > new Date(record.expires_at)) {
+    if (record.expired) {
       return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
     }
 
