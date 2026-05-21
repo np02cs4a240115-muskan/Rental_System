@@ -39,7 +39,8 @@ const Notification = {
     }
 
     const [rows] = await db.execute(
-      `SELECT n.*, b.status AS booking_status, c.name AS car_name
+      `SELECT n.*, b.status AS booking_status, b.user_id AS booking_user_id,
+              c.name AS car_name, c.vendor_id AS booking_vendor_id
        FROM notifications n
        LEFT JOIN bookings b ON b.id = n.booking_id
        LEFT JOIN cars c ON c.id = n.car_id

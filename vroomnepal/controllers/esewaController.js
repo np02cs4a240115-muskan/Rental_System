@@ -26,8 +26,8 @@ const notifyPaymentCompleted = async (booking) => {
   if (booking.vendor_id) {
     await Notification.create({
       user_id: booking.vendor_id,
-      type: 'payment_completed',
-      title: 'eSewa payment received',
+      type: 'vendor_payment_received',
+      title: 'Customer eSewa payment received',
       message: `${booking.user_name || 'A customer'} paid Rs. ${amount} for ${booking.car_name || 'your vehicle'}`,
       booking_id: booking.id,
       car_id: booking.car_id,
@@ -36,9 +36,9 @@ const notifyPaymentCompleted = async (booking) => {
 
   await Notification.create({
     user_id: booking.user_id,
-    type: 'payment_completed',
-    title: 'eSewa payment completed',
-    message: `Your payment of Rs. ${amount} for ${booking.car_name || 'your booking'} was received`,
+    type: 'customer_payment_completed',
+    title: 'eSewa payment successful',
+    message: `Your eSewa payment of Rs. ${amount} for ${booking.car_name || 'your booking'} is complete. Your booking is confirmed.`,
     booking_id: booking.id,
     car_id: booking.car_id,
   });
