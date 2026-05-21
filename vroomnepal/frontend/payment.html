@@ -658,13 +658,13 @@
 
       <div class="form-group">
         <label>Cardholder Name</label>
-        <input class="form-input" type="text" placeholder="Johnathan Doe" />
+        <input id="cardholderName" class="form-input" type="text" placeholder="Johnathan Doe" />
       </div>
 
       <div class="form-group">
         <label>Card Number</label>
         <div class="card-number-wrap">
-          <input class="form-input" type="text" placeholder="0000 0000 0000 0000" style="padding-right: 80px;"/>
+          <input id="cardNumber" class="form-input" type="text" placeholder="0000 0000 0000 0000" maxlength="19" style="padding-right: 80px;"/>
           <div class="card-icons">
             <!-- Visa badge -->
             <div class="visa-badge"><span>VISA</span></div>
@@ -681,7 +681,7 @@
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
           <label>Expiry Date</label>
-          <input class="form-input" type="text" placeholder="MM / YY" />
+          <input id="cardExpiry" class="form-input" type="text" placeholder="MM / YY" maxlength="5" />
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label>CVV</label>
@@ -828,6 +828,57 @@
     card.classList.add('active');
   }
 
+  function digitsOnly(value) {
+    return String(value || '').replace(/\D/g, '');
+  }
+
+  function isFutureExpiry(value) {
+    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2})$/);
+    if (!match) return false;
+
+    const month = Number(match[1]);
+    const year = 2000 + Number(match[2]);
+    if (month < 1 || month > 12) return false;
+
+    const expiryEnd = new Date(year, month, 0, 23, 59, 59, 999);
+    return expiryEnd >= new Date();
+  }
+
+  function normalizeExpiry(value) {
+    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2})$/);
+    return match ? `${match[1]}/${match[2]}` : '';
+  }
+
+  function validateCardDetails() {
+    const cardholderName = document.getElementById('cardholderName').value.trim();
+    const cardNumber = digitsOnly(document.getElementById('cardNumber').value);
+    const expiry = normalizeExpiry(document.getElementById('cardExpiry').value);
+    const cvv = digitsOnly(document.querySelector('.form-row input[type="password"]').value);
+
+    if (cardholderName.length < 2) {
+      alert('Please enter the cardholder name.');
+      return null;
+    }
+    if (cardNumber.length < 13 || cardNumber.length > 19) {
+      alert('Please enter a valid card number.');
+      return null;
+    }
+    if (!isFutureExpiry(expiry)) {
+      alert('Please enter a valid future expiry date in MM/YY format.');
+      return null;
+    }
+    if (cvv.length < 3 || cvv.length > 4) {
+      alert('Please enter a valid CVV.');
+      return null;
+    }
+
+    return {
+      cardholder_name: cardholderName,
+      card_last4: cardNumber.slice(-4),
+      expiry,
+    };
+  }
+
   function updatePaymentSummary() {
     const booking = JSON.parse(localStorage.getItem('currentBooking') || 'null');
     const bookingId = new URLSearchParams(window.location.search).get('booking_id') || booking?.id;
@@ -876,9 +927,9 @@
     const bookingId = new URLSearchParams(window.location.search).get('booking_id') || currentBooking?.id;
     const hasValidBooking = bookingId && Number.isInteger(Number(bookingId)) && currentBooking?.local !== true;
     const methodName = document.querySelector('.method-card.active .method-name')?.textContent.toLowerCase() || 'cash';
-    const paymentMethod = methodName.includes('card') ? 'card' : methodName.includes('wallet') ? 'online' : 'cash';
+    const paymentMethod = methodName.includes('card') ? 'card' : methodName.includes('wallet') ? 'online' : 'bank';
 
-    if (methodName.includes('wallet')) {
+    if (methodName.includes('wallet') || methodName.includes('bank')) {
       window.location.href = `payment_Ewallet.html${bookingId ? `?booking_id=${encodeURIComponent(bookingId)}` : ''}`;
       return;
     }
@@ -895,6 +946,9 @@
       return;
     }
 
+    const paymentDetails = paymentMethod === 'card' ? validateCardDetails() : null;
+    if (paymentMethod === 'card' && !paymentDetails) return;
+
     try {
       const res = await fetch(`${API_BASE}/payments`, {
         method: 'POST',
@@ -902,7 +956,11 @@
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ booking_id: Number(bookingId), payment_method: paymentMethod }),
+        body: JSON.stringify({
+          booking_id: Number(bookingId),
+          payment_method: paymentMethod,
+          payment_details: paymentDetails,
+        }),
       });
       const data = await res.json();
 
@@ -913,8 +971,7 @@
 
       localStorage.setItem('currentPayment', JSON.stringify(data.payment));
       localStorage.removeItem('bookingDraft');
-      alert('Payment record created successfully.');
-      window.location.href = 'dashboard_customer.html';
+      window.location.href = 'paymentSucess.html';
     } catch (error) {
       alert('Cannot connect to backend. Make sure the server is running on port 5001.');
     }

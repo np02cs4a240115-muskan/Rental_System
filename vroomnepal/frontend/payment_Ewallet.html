@@ -752,6 +752,30 @@
   function getUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch (error) { return null; } }
   function money(value) { return 'Rs. ' + Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function dateOnly(value) { return value ? String(value).slice(0, 10) : ''; }
+  function digitsOnly(value) { return String(value || '').replace(/\D/g, ''); }
+
+  function selectMethod(method) {
+    document.querySelectorAll('.method-card').forEach(card => card.classList.remove('active'));
+    document.getElementById(`tab-${method}`).classList.add('active');
+    ['ewallet', 'debit', 'bank'].forEach(name => {
+      document.getElementById(`form-${name}`).style.display = name === method ? 'block' : 'none';
+    });
+  }
+
+  function formatCard(input) {
+    input.value = digitsOnly(input.value).slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function isFutureExpiry(value) {
+    const match = String(value || '').trim().match(/^(\d{2})\/(\d{2})$/);
+    if (!match) return false;
+
+    const month = Number(match[1]);
+    const year = 2000 + Number(match[2]);
+    if (month < 1 || month > 12) return false;
+
+    return new Date(year, month, 0, 23, 59, 59, 999) >= new Date();
+  }
 
   function requireSession() {
     const user = getUser();
@@ -838,8 +862,7 @@
         return;
       }
       localStorage.setItem('currentPayment', JSON.stringify(result.payment));
-      alert('eSewa payment verified successfully.');
-      window.location.href = 'dashboard_customer.html';
+      window.location.href = 'paymentSucess.html';
     } catch (error) {
       alert('Cannot verify eSewa payment with backend.');
     }
@@ -858,13 +881,15 @@
       const cardNum = document.getElementById('card-num').value.trim();
       const expiry = document.getElementById('card-expiry').value.trim();
       const cvv = document.getElementById('card-cvv').value.trim();
-      if (!cardNum || cardNum.length < 15) { alert('Please enter a valid Card Number.'); return false; }
-      if (!expiry || expiry.length < 4) { alert('Please enter expiration date (MM/YY).'); return false; }
-      if (!cvv || cvv.length < 3) { alert('Please enter a valid CVV.'); return false; }
+      const name = document.getElementById('card-name').value.trim();
+      if (digitsOnly(cardNum).length < 13 || digitsOnly(cardNum).length > 19) { alert('Please enter a valid Card Number.'); return false; }
+      if (!isFutureExpiry(expiry)) { alert('Please enter a valid future expiration date (MM/YY).'); return false; }
+      if (digitsOnly(cvv).length < 3 || digitsOnly(cvv).length > 4) { alert('Please enter a valid CVV.'); return false; }
+      if (name.length < 2) { alert('Please enter the cardholder name.'); return false; }
     } else if (activeMethod === 'bank') {
       const acc = document.getElementById('bank-acc').value.trim();
       const holder = document.getElementById('bank-holder').value.trim();
-      if (!acc) { alert('Please enter your bank account number.'); return false; }
+      if (digitsOnly(acc).length < 6) { alert('Please enter a valid bank account number.'); return false; }
       if (!holder) { alert('Please enter the account holder name.'); return false; }
     }
     return true;
@@ -897,19 +922,34 @@
   }
 
   async function submitDirectPayment(bookingId, method) {
+    const paymentDetails = method === 'card'
+      ? {
+          cardholder_name: document.getElementById('card-name').value.trim(),
+          card_last4: digitsOnly(document.getElementById('card-num').value).slice(-4),
+          expiry: document.getElementById('card-expiry').value.trim(),
+        }
+      : {
+          bank_name: document.getElementById('bank-name').value,
+          bank_account_last4: digitsOnly(document.getElementById('bank-acc').value).slice(-4),
+          account_holder: document.getElementById('bank-holder').value.trim(),
+        };
+
     const response = await fetch(`${API_BASE}/payments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken()}`,
       },
-      body: JSON.stringify({ booking_id: Number(bookingId), payment_method: method }),
+      body: JSON.stringify({
+        booking_id: Number(bookingId),
+        payment_method: method,
+        payment_details: paymentDetails,
+      }),
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.success) throw new Error(data.message || 'Could not complete payment.');
     localStorage.setItem('currentPayment', JSON.stringify(data.payment));
-    alert('Payment completed successfully.');
-    window.location.href = 'dashboard_customer.html';
+    window.location.href = 'paymentSucess.html';
   }
 
   async function handlePayment() {

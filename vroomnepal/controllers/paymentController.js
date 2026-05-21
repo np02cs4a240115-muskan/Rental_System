@@ -13,6 +13,49 @@ const canViewBookingPayment = (user, booking) =>
   isOwnerOrAdmin(user, booking.user_id) ||
   (user.role === 'vendor' && Number(booking.vendor_id) === Number(user.id));
 
+const isFutureExpiry = (value) => {
+  const match = String(value || '').trim().match(/^(\d{2})\/(\d{2})$/);
+  if (!match) return false;
+
+  const month = Number(match[1]);
+  const year = 2000 + Number(match[2]);
+  if (month < 1 || month > 12) return false;
+
+  return new Date(year, month, 0, 23, 59, 59, 999) >= new Date();
+};
+
+const validatePaymentDetails = (method, details = {}) => {
+  if (method === 'card') {
+    if (!details.cardholder_name || String(details.cardholder_name).trim().length < 2) {
+      return 'Cardholder name is required';
+    }
+    if (!/^\d{4}$/.test(String(details.card_last4 || ''))) {
+      return 'Valid card details are required';
+    }
+    if (!isFutureExpiry(details.expiry)) {
+      return 'Valid future card expiry is required';
+    }
+  }
+
+  if (method === 'bank') {
+    if (!details.bank_name || String(details.bank_name).trim().length < 2) {
+      return 'Bank name is required';
+    }
+    if (!/^\d{4}$/.test(String(details.bank_account_last4 || ''))) {
+      return 'Valid bank account details are required';
+    }
+    if (!details.account_holder || String(details.account_holder).trim().length < 2) {
+      return 'Account holder name is required';
+    }
+  }
+
+  if (['online', 'esewa'].includes(method)) {
+    return 'Please complete wallet payment through the eSewa checkout';
+  }
+
+  return null;
+};
+
 const notifyPaymentCompleted = async (booking) => {
   const amount = Number(booking.total_price || 0).toLocaleString('en-IN');
 
@@ -39,7 +82,8 @@ const notifyPaymentCompleted = async (booking) => {
 
 exports.createPayment = async (req, res, next) => {
   try {
-    const { booking_id, payment_method } = req.body;
+    const { booking_id, payment_method, payment_details } = req.body;
+    const method = payment_method || 'cash';
 
     const booking = await Booking.findById(booking_id);
     if (!booking) {
@@ -57,6 +101,11 @@ exports.createPayment = async (req, res, next) => {
       });
     }
 
+    const paymentError = validatePaymentDetails(method, payment_details);
+    if (paymentError) {
+      return res.status(400).json({ success: false, message: paymentError });
+    }
+
     const existingPayment = await Payment.findByBookingId(booking_id);
     if (existingPayment) {
       if (existingPayment.payment_status === 'completed') {
@@ -66,7 +115,7 @@ exports.createPayment = async (req, res, next) => {
 
       await Payment.updateForBooking(booking_id, {
         amount: booking.total_price,
-        payment_method: payment_method || existingPayment.payment_method || 'cash',
+        payment_method: method || existingPayment.payment_method || 'cash',
         payment_status: 'completed',
       });
       await Booking.updateStatus(booking_id, 'confirmed');
@@ -79,7 +128,7 @@ exports.createPayment = async (req, res, next) => {
     const paymentId = await Payment.create({
       booking_id,
       amount: booking.total_price,
-      payment_method: payment_method || 'cash',
+      payment_method: method,
       payment_status: 'completed',
     });
     await Booking.updateStatus(booking_id, 'confirmed');
