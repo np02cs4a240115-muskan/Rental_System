@@ -15,6 +15,7 @@ const pool = mysql.createPool({
   queueLimit: 0,
   charset: 'utf8mb4',
 });
+pool.isDemo = false;
 
 const schemaName = process.env.DB_NAME || 'car_rental_db';
 
@@ -110,6 +111,38 @@ const ensureNotificationsTable = async () => {
   `);
 };
 
+const ensureVendorDocumentsTable = async () => {
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS vendor_documents (
+      id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      vendor_id INT UNSIGNED NOT NULL,
+      document_type ENUM('national_id','driving_license','business_license') NOT NULL,
+      file_name VARCHAR(255) NOT NULL,
+      file_type VARCHAR(120) DEFAULT NULL,
+      file_size INT UNSIGNED DEFAULT NULL,
+      file_data MEDIUMTEXT DEFAULT NULL,
+      status ENUM('missing','pending','verified','rejected') NOT NULL DEFAULT 'pending',
+      rejection_reason VARCHAR(500) DEFAULT NULL,
+      reviewed_at DATETIME DEFAULT NULL,
+      uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT fk_vendor_document_user FOREIGN KEY (vendor_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE KEY uniq_vendor_document_type (vendor_id, document_type),
+      INDEX idx_vendor_documents_status (status)
+    ) ENGINE=InnoDB
+      DEFAULT CHARSET=utf8mb4
+      COLLATE=utf8mb4_unicode_ci
+  `);
+
+  if (!(await columnExists('vendor_documents', 'file_data'))) {
+    await pool.execute(
+      `ALTER TABLE vendor_documents
+       ADD COLUMN file_data MEDIUMTEXT DEFAULT NULL AFTER file_size`
+    );
+    console.log('Added vendor_documents.file_data column');
+  }
+};
+
 const seedDefaultVehicles = async () => {
   const vehicles = [
     ['Mercedes AMG GT-R', 'Mercedes', 'AMG GT-R', 2024, 28000.00, 'image/car.img.jpg'],
@@ -198,13 +231,13 @@ const ensureDefaultAdminPassword = async () => {
     await ensureEsewaTransactionColumn();
     await ensurePasswordOtpTable();
     await ensureNotificationsTable();
+    await ensureVendorDocumentsTable();
     await ensureDefaultAdminPassword();
     await seedDefaultVehicles();
   } catch (error) {
     console.error('MySQL connection failed:', error.message);
-    console.error('Make sure XAMPP and MySQL are running.');
-    console.error('Check DB_PASSWORD in your .env file.');
-    process.exit(1);
+    console.error('Using in-memory demo data so the website can still be showcased.');
+    pool.isDemo = true;
   }
 })();
 

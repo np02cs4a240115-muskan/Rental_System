@@ -1,8 +1,26 @@
 const db = require('../config/db');
+const demoStore = require('../config/demoStore');
 
 const Notification = {
   async create({ user_id, type = 'info', title, message, booking_id = null, car_id = null }) {
     if (!user_id) return null;
+
+    if (db.isDemo) {
+      const store = await demoStore.ensureReady();
+      const notification = {
+        id: store.counters.notification++,
+        user_id,
+        type,
+        title,
+        message,
+        booking_id,
+        car_id,
+        is_read: false,
+        created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      };
+      store.notifications.unshift(notification);
+      return notification.id;
+    }
 
     const [result] = await db.execute(
       `INSERT INTO notifications (user_id, type, title, message, booking_id, car_id)
@@ -13,6 +31,13 @@ const Notification = {
   },
 
   async findByUser(userId) {
+    if (db.isDemo) {
+      const store = await demoStore.ensureReady();
+      return store.notifications
+        .filter(notification => Number(notification.user_id) === Number(userId))
+        .slice(0, 50);
+    }
+
     const [rows] = await db.execute(
       `SELECT n.*, b.status AS booking_status, c.name AS car_name
        FROM notifications n
@@ -27,6 +52,13 @@ const Notification = {
   },
 
   async unreadCount(userId) {
+    if (db.isDemo) {
+      const store = await demoStore.ensureReady();
+      return store.notifications.filter(notification =>
+        Number(notification.user_id) === Number(userId) && !notification.is_read
+      ).length;
+    }
+
     const [rows] = await db.execute(
       'SELECT COUNT(*) AS count FROM notifications WHERE user_id = ? AND is_read = FALSE',
       [userId]
@@ -35,6 +67,18 @@ const Notification = {
   },
 
   async markAllRead(userId) {
+    if (db.isDemo) {
+      const store = await demoStore.ensureReady();
+      let count = 0;
+      store.notifications.forEach(notification => {
+        if (Number(notification.user_id) === Number(userId) && !notification.is_read) {
+          notification.is_read = true;
+          count += 1;
+        }
+      });
+      return count;
+    }
+
     const [result] = await db.execute(
       'UPDATE notifications SET is_read = TRUE WHERE user_id = ?',
       [userId]

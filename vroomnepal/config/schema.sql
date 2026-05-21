@@ -112,6 +112,27 @@ CREATE TABLE IF NOT EXISTS notifications (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
 
+-- VENDOR VERIFICATION DOCUMENTS
+CREATE TABLE IF NOT EXISTS vendor_documents (
+  id               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  vendor_id        INT UNSIGNED NOT NULL,
+  document_type    ENUM('national_id','driving_license','business_license') NOT NULL,
+  file_name        VARCHAR(255) NOT NULL,
+  file_type        VARCHAR(120) DEFAULT NULL,
+  file_size        INT UNSIGNED DEFAULT NULL,
+  file_data        MEDIUMTEXT DEFAULT NULL,
+  status           ENUM('missing','pending','verified','rejected') NOT NULL DEFAULT 'pending',
+  rejection_reason VARCHAR(500) DEFAULT NULL,
+  reviewed_at      DATETIME DEFAULT NULL,
+  uploaded_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_vendor_document_user FOREIGN KEY (vendor_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uniq_vendor_document_type (vendor_id, document_type),
+  INDEX idx_vendor_documents_status (status)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
 -- ── SEED: Default admin account (password = "Admin@123") ─────
 INSERT IGNORE INTO users (name, email, password, phone, role)
 VALUES (

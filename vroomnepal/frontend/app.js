@@ -186,21 +186,102 @@
       if (statValues[1]) statValues[1].textContent = total;
       if (statValues[2]) statValues[2].textContent = `Rs. ${spent.toLocaleString('en-IN')}`;
 
-      const tbody = document.getElementById('activityBody');
-      if (!tbody || bookings.length === 0) return;
+      const cardValues = document.querySelectorAll('.cards-grid .card-value');
+      if (cardValues[0]) cardValues[0].textContent = active;
+      if (cardValues[1]) cardValues[1].textContent = `Rs. ${spent.toLocaleString('en-IN')}`;
 
-      tbody.innerHTML = bookings.map(booking => `
-        <tr>
-          <td class="vehicle-name">${booking.car_name || 'Vehicle'}</td>
-          <td>${String(booking.start_date).slice(0, 10)} - ${String(booking.end_date).slice(0, 10)}</td>
-          <td class="cost">Rs. ${Number(booking.total_price || 0).toLocaleString('en-IN')}</td>
-          <td>-</td>
-          <td><span class="badge ${booking.status === 'cancelled' ? 'badge-red' : booking.status === 'confirmed' ? 'badge-green' : 'badge-orange'}">${booking.status}</span></td>
-          <td><div class="action-btns"><div class="action-btn" onclick="viewTrip('${booking.car_name || 'Vehicle'}')">View</div></div></td>
-        </tr>
-      `).join('');
+      const activeBadge = document.querySelector('.growth-badge');
+      if (activeBadge) activeBadge.textContent = `${active} Active`;
+
+      const bookedFilter = document.querySelector('.fleet-filters .rented');
+      if (bookedFilter) bookedFilter.textContent = `Booked (${active})`;
+
+      const tbody = document.getElementById('activityBody');
+      if (tbody && bookings.length > 0) {
+        tbody.innerHTML = bookings.map(booking => `
+          <tr>
+            <td class="vehicle-name">${booking.car_name || 'Vehicle'}</td>
+            <td>${String(booking.start_date).slice(0, 10)} - ${String(booking.end_date).slice(0, 10)}</td>
+            <td class="cost">Rs. ${Number(booking.total_price || 0).toLocaleString('en-IN')}</td>
+            <td>-</td>
+            <td><span class="badge ${booking.status === 'cancelled' ? 'badge-red' : booking.status === 'confirmed' ? 'badge-green' : 'badge-orange'}">${booking.status}</span></td>
+            <td><div class="action-btns"><div class="action-btn" onclick="viewTrip('${booking.car_name || 'Vehicle'}')">View</div></div></td>
+          </tr>
+        `).join('');
+      }
+
+      const requestsContainer = document.querySelector('.requests-container');
+      if (requestsContainer) {
+        const staticItems = requestsContainer.querySelectorAll('.request-item');
+        staticItems.forEach(item => item.remove());
+
+        const viewAll = requestsContainer.querySelector('.view-all');
+        const renderedBookings = bookings.length > 0
+          ? bookings.slice(0, 5).map(booking => buildDashboardBookingItem(booking)).join('')
+          : '<div class="request-item"><div class="request-avatar">VN</div><div class="request-info"><div class="request-name">No<br>Bookings</div><div class="request-details">Search vehicles<br>to start</div></div></div>';
+
+        if (viewAll) {
+          viewAll.insertAdjacentHTML('beforebegin', renderedBookings);
+        } else {
+          requestsContainer.insertAdjacentHTML('beforeend', renderedBookings);
+        }
+      }
     } catch (error) {
     }
+  }
+
+  function bookingInitials(name) {
+    return String(name || 'VN')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(part => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  function buildDashboardBookingItem(booking) {
+    const start = String(booking.start_date || '').slice(0, 10);
+    const end = String(booking.end_date || '').slice(0, 10);
+    const total = Number(booking.total_price || 0).toLocaleString('en-IN');
+    const canCancel = !['cancelled', 'completed'].includes(booking.status);
+
+    return `
+      <div class="request-item" data-booking-id="${booking.id}">
+        <div class="request-avatar">${bookingInitials(booking.car_name)}</div>
+        <div class="request-info">
+          <div class="request-name">${booking.car_name || 'Vehicle'}</div>
+          <div class="request-details">${start} to ${end}<br>Rs. ${total} - ${booking.status}</div>
+        </div>
+        <button class="request-action accept" type="button" onclick="VroomApp.viewBooking(${booking.id})">
+          <i class="fas fa-check"></i>
+        </button>
+        <button class="request-action reject" type="button" ${canCancel ? `onclick="VroomApp.cancelBooking(${booking.id})"` : 'disabled'}>
+          <i class="fas fa-times"></i>
+        </button>
+      </div>`;
+  }
+
+  async function cancelBooking(bookingId) {
+    const token = localStorage.getItem('token');
+    if (!token || !bookingId) return;
+
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      alert(data.message || (res.ok ? 'Booking cancelled.' : 'Could not cancel booking.'));
+      if (res.ok) window.location.reload();
+    } catch (error) {
+      alert('Cannot connect to backend. Make sure the server is running on port 5001.');
+    }
+  }
+
+  function viewBooking(bookingId) {
+    if (!bookingId) return;
+    window.location.href = `/payment.html?booking_id=${encodeURIComponent(bookingId)}`;
   }
 
   function downloadTextFile(filename, content, type = 'text/plain') {
@@ -266,5 +347,7 @@
     saveLocalBooking,
     getBookings,
     downloadTextFile,
+    cancelBooking,
+    viewBooking,
   };
 })();
