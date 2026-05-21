@@ -32,7 +32,7 @@ exports.createBooking = async (req, res, next) => {
       });
     }
 
-    const { car_id, start_date, end_date } = req.body;
+    const { car_id, start_date, end_date, pickup_time, dropoff_time } = req.body;
     const user_id = req.user.id;
 
     if (start_date < todayDateString()) {
@@ -81,6 +81,8 @@ exports.createBooking = async (req, res, next) => {
       car_id,
       start_date,
       end_date,
+      pickup_time: pickup_time || null,
+      dropoff_time: dropoff_time || null,
       total_price,
     });
 

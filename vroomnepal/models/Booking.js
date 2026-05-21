@@ -63,7 +63,7 @@ const Booking = {
     return +(base + serviceFee + insurance).toFixed(2);
   },
 
-  async create({ user_id, car_id, start_date, end_date, total_price }) {
+  async create({ user_id, car_id, start_date, end_date, pickup_time = null, dropoff_time = null, total_price }) {
     if (db.isDemo) {
       const store = await demoStore.ensureReady();
       const booking = {
@@ -72,6 +72,8 @@ const Booking = {
         car_id,
         start_date,
         end_date,
+        pickup_time,
+        dropoff_time,
         total_price,
         status: 'pending',
         created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -81,9 +83,9 @@ const Booking = {
     }
 
     const [result] = await db.execute(
-      `INSERT INTO bookings (user_id, car_id, start_date, end_date, total_price)
-       VALUES (?, ?, ?, ?, ?)`,
-      [user_id, car_id, start_date, end_date, total_price]
+      `INSERT INTO bookings (user_id, car_id, start_date, end_date, pickup_time, dropoff_time, total_price)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, car_id, start_date, end_date, pickup_time, dropoff_time, total_price]
     );
     return result.insertId;
   },

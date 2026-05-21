@@ -88,6 +88,24 @@ const ensureCarsVendorColumn = async () => {
   }
 };
 
+const ensureBookingTimeColumns = async () => {
+  if (!(await columnExists('bookings', 'pickup_time'))) {
+    await pool.execute(
+      `ALTER TABLE bookings
+       ADD COLUMN pickup_time TIME DEFAULT NULL AFTER end_date`
+    );
+    console.log('Added bookings.pickup_time column');
+  }
+
+  if (!(await columnExists('bookings', 'dropoff_time'))) {
+    await pool.execute(
+      `ALTER TABLE bookings
+       ADD COLUMN dropoff_time TIME DEFAULT NULL AFTER pickup_time`
+    );
+    console.log('Added bookings.dropoff_time column');
+  }
+};
+
 const ensureNotificationsTable = async () => {
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS notifications (
@@ -228,6 +246,7 @@ const ensureDefaultAdminPassword = async () => {
     connection.release();
     await ensureUserRoleEnum();
     await ensureCarsVendorColumn();
+    await ensureBookingTimeColumns();
     await ensureEsewaTransactionColumn();
     await ensurePasswordOtpTable();
     await ensureNotificationsTable();

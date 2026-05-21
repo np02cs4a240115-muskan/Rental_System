@@ -333,7 +333,175 @@
     });
   }
 
+  function enhanceSmoothExperience() {
+    if (document.getElementById('vroom-smooth-experience')) return;
+
+    const style = document.createElement('style');
+    style.id = 'vroom-smooth-experience';
+    style.textContent = `
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        a,
+        button,
+        input,
+        select,
+        textarea,
+        .btn,
+        .card,
+        .method-card,
+        .vehicle-card,
+        .car-card,
+        .fleet-card,
+        .request-item,
+        .booking-card,
+        .summary-box,
+        .summary-panel,
+        .payment-panel,
+        .form-input,
+        .text-input,
+        .otp-input {
+          transition-duration: 180ms;
+          transition-timing-function: cubic-bezier(.2, .8, .2, 1);
+          transition-property: transform, box-shadow, border-color, background-color, color, opacity, filter;
+        }
+
+        a,
+        button,
+        [role="button"],
+        .method-card,
+        .vehicle-card,
+        .car-card,
+        .fleet-card,
+        .request-item {
+          will-change: transform;
+        }
+
+        a:hover,
+        button:hover,
+        [role="button"]:hover,
+        .method-card:hover,
+        .vehicle-card:hover,
+        .car-card:hover,
+        .fleet-card:hover,
+        .request-item:hover {
+          transform: translateY(-1px);
+        }
+
+        button:active,
+        [role="button"]:active,
+        .method-card:active,
+        .vehicle-card:active,
+        .car-card:active,
+        .fleet-card:active {
+          transform: translateY(0) scale(.99);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus,
+        .form-input:focus,
+        .text-input:focus,
+        .otp-input:focus {
+          transform: translateY(-1px);
+        }
+
+        body.vroom-page-ready main,
+        body.vroom-page-ready .page-wrapper,
+        body.vroom-page-ready .container,
+        body.vroom-page-ready .dashboard,
+        body.vroom-page-ready .login-container,
+        body.vroom-page-ready .signup-container {
+          animation: vroomPageSettle 320ms cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        [data-vroom-reveal] {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+
+        [data-vroom-reveal].vroom-revealed {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes vroomPageSettle {
+        from {
+          opacity: .985;
+          transform: translateY(3px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    requestAnimationFrame(() => {
+      document.body.classList.add('vroom-page-ready');
+    });
+
+    const revealSelector = [
+      '.card',
+      '.vehicle-card',
+      '.car-card',
+      '.fleet-card',
+      '.request-item',
+      '.booking-card',
+      '.summary-box',
+      '.summary-panel',
+      '.payment-panel',
+    ].join(',');
+    const revealTargets = document.querySelectorAll(revealSelector);
+
+    if (!('IntersectionObserver' in window)) {
+      revealTargets.forEach(el => el.classList.add('vroom-revealed'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('vroom-revealed');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+
+    function revealElement(el, index = 0) {
+      if (!el || el.dataset.vroomReveal === 'true') return;
+      el.dataset.vroomReveal = 'true';
+      el.style.transitionDelay = `${Math.min(index * 18, 140)}ms`;
+      observer.observe(el);
+    }
+
+    revealTargets.forEach((el, index) => {
+      revealElement(el, index);
+    });
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      let index = 0;
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (!(node instanceof Element)) return;
+          if (node.matches(revealSelector)) revealElement(node, index++);
+          node.querySelectorAll?.(revealSelector).forEach(child => revealElement(child, index++));
+        });
+      });
+    });
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    enhanceSmoothExperience();
     enhanceLinks();
     enhanceLogoLinks();
     enhanceAuthButtons();

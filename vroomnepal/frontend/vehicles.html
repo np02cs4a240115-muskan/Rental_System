@@ -281,6 +281,24 @@
     color: #ffffff;
   }
 
+  .field-input input {
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .field-input input::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    cursor: pointer;
+  }
+
   .field-input svg {
     width: 14px;
     height: 14px;
@@ -499,14 +517,14 @@
         <div class="field-group">
           <div class="field-label">Start Date</div>
           <div class="field-input">
-            <span>05/20/2026</span>
+            <input id="startDate" type="date" aria-label="Start Date">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
         </div>
         <div class="field-group">
           <div class="field-label">End Date</div>
           <div class="field-input">
-            <span>05/22/2027</span>
+            <input id="endDate" type="date" aria-label="End Date">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
         </div>
@@ -516,14 +534,14 @@
         <div class="field-group">
           <div class="field-label">Pickup Time</div>
           <div class="field-input">
-            <span>10:00 AM</span>
+            <input id="pickupTime" type="time" aria-label="Pickup Time">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
         </div>
         <div class="field-group">
           <div class="field-label">Drop-off Time</div>
           <div class="field-input">
-            <span>08:00 PM</span>
+            <input id="dropoffTime" type="time" aria-label="Drop-off Time">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
         </div>
@@ -580,7 +598,7 @@
     return year && month && day ? `${month}/${day}/${year}` : dateString;
   }
 
-  function getBookingDates() {
+  function defaultBookingDates() {
     const rentalSearch = JSON.parse(localStorage.getItem('rentalSearch') || 'null');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -595,6 +613,29 @@
       startDate: formatDate(start),
       endDate: formatDate(end),
       days: Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24))),
+    };
+  }
+
+  function getBookingDates() {
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+    const fallback = defaultBookingDates();
+    const startDate = startInput?.value || fallback.startDate;
+    const endDate = endInput?.value || fallback.endDate;
+    const start = new Date(`${startDate}T00:00:00`);
+    const end = new Date(`${endDate}T00:00:00`);
+
+    return {
+      startDate,
+      endDate,
+      days: Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24))),
+    };
+  }
+
+  function getTimeDetails() {
+    return {
+      pickup_time: document.getElementById('pickupTime')?.value || '10:00',
+      dropoff_time: document.getElementById('dropoffTime')?.value || '20:00',
     };
   }
 
@@ -665,10 +706,7 @@
   }
 
   function updateReservationSummary(pricePerDay = 0) {
-    const { startDate, endDate, days } = getBookingDates();
-    const dateValues = document.querySelector('.right-col .date-row')?.querySelectorAll('.field-input span') || [];
-    if (dateValues[0]) dateValues[0].textContent = formatDisplayDate(startDate);
-    if (dateValues[1]) dateValues[1].textContent = formatDisplayDate(endDate);
+    const { days } = getBookingDates();
 
     const { base, serviceFee, insurance, total } = getBookingPrice(pricePerDay);
     const labels = document.querySelectorAll('.pricing-label');
@@ -681,12 +719,50 @@
     if (totalValue) totalValue.textContent = `Rs. ${total.toLocaleString('en-IN')}`;
   }
 
+  function initializeReservationFields() {
+    const { startDate, endDate } = defaultBookingDates();
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+    const pickupInput = document.getElementById('pickupTime');
+    const dropoffInput = document.getElementById('dropoffTime');
+
+    if (startInput) {
+      startInput.min = formatDate(new Date());
+      startInput.value = startDate;
+    }
+    if (endInput) {
+      endInput.min = startDate;
+      endInput.value = endDate;
+    }
+    if (pickupInput) pickupInput.value = '10:00';
+    if (dropoffInput) dropoffInput.value = '20:00';
+
+    startInput?.addEventListener('change', () => {
+      const start = startInput.value;
+      if (!start) return;
+      if (endInput) {
+        endInput.min = start;
+        if (!endInput.value || endInput.value <= start) {
+          const nextDay = new Date(`${start}T00:00:00`);
+          nextDay.setDate(nextDay.getDate() + 1);
+          endInput.value = formatDate(nextDay);
+        }
+      }
+      updateReservationSummary(selectedVehicle?.price || parsePrice(selectedVehicle?.priceText));
+    });
+
+    endInput?.addEventListener('change', () => {
+      updateReservationSummary(selectedVehicle?.price || parsePrice(selectedVehicle?.priceText));
+    });
+  }
+
   async function confirmBooking() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const carId = params.get('car_id') || selectedVehicle?.id;
     const numericCarId = Number(carId);
     const { startDate, endDate } = getBookingDates();
+    const timeDetails = getTimeDetails();
     const price = selectedVehicle?.price || parsePrice(selectedVehicle?.priceText) || 0;
     const { total } = getBookingPrice(price);
 
@@ -703,6 +779,16 @@
       return;
     }
 
+    if (!startDate || !endDate || endDate <= startDate) {
+      alert('Please select a valid start date and end date.');
+      return;
+    }
+
+    if (!timeDetails.pickup_time || !timeDetails.dropoff_time) {
+      alert('Please select pickup and drop-off time.');
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/bookings`, {
         method: 'POST',
@@ -710,7 +796,13 @@
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ car_id: numericCarId, start_date: startDate, end_date: endDate }),
+        body: JSON.stringify({
+          car_id: numericCarId,
+          start_date: startDate,
+          end_date: endDate,
+          pickup_time: timeDetails.pickup_time,
+          dropoff_time: timeDetails.dropoff_time,
+        }),
       });
       const data = await res.json();
 
@@ -719,7 +811,7 @@
         return;
       }
 
-      localStorage.setItem('currentBooking', JSON.stringify(data.booking));
+      localStorage.setItem('currentBooking', JSON.stringify({ ...data.booking, ...timeDetails }));
       window.location.href = `payment.html?booking_id=${data.booking.id}`;
     } catch (error) {
       alert('Cannot connect to backend. Make sure the server is running on port 5001.');
@@ -727,6 +819,7 @@
   }
 
   document.querySelector('.confirm-btn').addEventListener('click', confirmBooking);
+  initializeReservationFields();
   loadBookingVehicle().finally(setBookingVehicle);
 </script>
 

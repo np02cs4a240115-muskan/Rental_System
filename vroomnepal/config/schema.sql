@@ -51,6 +51,8 @@ CREATE TABLE IF NOT EXISTS bookings (
   car_id      INT UNSIGNED  NOT NULL,
   start_date  DATE          NOT NULL,
   end_date    DATE          NOT NULL,
+  pickup_time TIME          DEFAULT NULL,
+  dropoff_time TIME         DEFAULT NULL,
   total_price DECIMAL(10,2) NOT NULL,
   status      ENUM('pending','confirmed','cancelled','completed')
               NOT NULL DEFAULT 'pending',

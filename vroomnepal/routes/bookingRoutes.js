@@ -19,6 +19,8 @@ router.post(
     body('car_id').isInt({ min: 1 }).withMessage('Valid car_id is required'),
     body('start_date').isDate().withMessage('Valid start_date (YYYY-MM-DD) is required'),
     body('end_date').isDate().withMessage('Valid end_date (YYYY-MM-DD) is required'),
+    body('pickup_time').optional().matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage('pickup_time must be HH:MM'),
+    body('dropoff_time').optional().matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage('dropoff_time must be HH:MM'),
   ],
   validate,
   bookingController.createBooking
