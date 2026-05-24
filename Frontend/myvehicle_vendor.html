@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Vehicles - VroomNepal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. VARIABLES & RESET
+       ========================================================================= */
+    :root {
+      --font-main: 'Inter', sans-serif;
+      --sidebar-width: 260px; 
+      --navbar-height: 64px;
+      
+      --bg-dashboard: #f5f6fa;
+      --bg-card: #ffffff;
+      --border-color: #e8e8f0;
+      
+      --text-primary: #1a1a2e;
+      --text-muted: #6b7280;
+      --brand-indigo: #5b2be0;
+      --brand-light: #f0ecff;
+      
+      --status-active: #22c55e;
+      --status-rented: #5b2be0;
+      --status-maintenance: #f97316;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-dashboard);
+      color: var(--text-primary);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       2. SIDEBAR NAVIGATION PANELS
+       ========================================================================= */
+    .sidebar-panel {
+      width: var(--sidebar-width);
+      background-color: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-brand-wrapper {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid #f0f0f5;
+      gap: 10px;
+    }
+
+    .brand-logo-img {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      color: #1a1a2e;
+      line-height: 1;
+    }
+
+    .brand-text span {
+      color: #7c5cf6;
+      font-weight: 400;
+    }
+
+    .sidebar-nav-list {
+      list-style: none;
+      padding: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: #6b6b80;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-link-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .nav-link-item:hover {
+      background-color: #f5f3ff;
+      color: var(--brand-indigo);
+    }
+
+    .nav-link-item.active-route {
+      background-color: var(--brand-light);
+      color: var(--brand-indigo);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       3. VIEWPORT WRAPPER & TOP BAR
+       ========================================================================= */
+    .viewport-main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .top-navbar {
+      height: var(--navbar-height);
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-field-control {
+      width: 260px;
+      height: 36px;
+      background-color: #f8f9fa;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0 42px 0 14px;
+      font-family: var(--font-main);
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-field-control:focus {
+      border-color: var(--brand-indigo);
+      background-color: var(--bg-card);
+    }
+
+    .search-action-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--brand-indigo);
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      transition: background 0.2s;
+    }
+
+    .search-action-btn:hover {
+      background: #4a21b8;
+    }
+
+    .search-action-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .top-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f5f6fa;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 5px 12px 5px 5px;
+    }
+
+    .user-avatar-badge {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--brand-indigo), #8b5cf6);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .user-meta-details {
+      line-height: 1.2;
+    }
+
+    .user-profile-name {
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .user-profile-role {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       4. MAIN BODY CONTAINER & CONTEXT HEADER
+       ========================================================================= */
+    .body-content-container {
+      padding: 28px 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .context-header-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-headline {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .header-sub-caption {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .action-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sort-dropdown-select {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      font-family: var(--font-main);
+      font-size: 12px;
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-action-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
+      background-color: var(--brand-indigo);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-action-trigger:hover {
+      background-color: #4a21b8;
+    }
+
+    /* ==========================================================================
+       5. INTERACTIVE SEGMENTED TABS
+       ========================================================================= */
+    .segmented-filter-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      gap: 20px;
+    }
+
+    .filter-segment-tab {
+      background: none;
+      border: none;
+      padding-bottom: 12px;
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .filter-segment-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .filter-segment-tab.active-segment {
+      color: var(--brand-indigo);
+    }
+
+    .filter-segment-tab.active-segment::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--brand-indigo);
+    }
+
+    /* ==========================================================================
+       6. VEHICLE MESH GRID DISPLAY
+       ========================================================================= */
+    .vehicles-mesh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .vehicle-card-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .vehicle-card-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+    }
+
+    .card-banner-graphic {
+      height: 140px;
+      background-color: #f8f8f8;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-banner-graphic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .vehicle-card-item:hover .card-banner-graphic img {
+      transform: scale(1.04);
+    }
+
+    .status-pill-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .status-pill-badge.state-active { background-color: var(--status-active); }
+    .status-pill-badge.state-rented { background-color: var(--status-rented); }
+    .status-pill-badge.state-maintenance { background-color: var(--status-maintenance); }
+
+    .card-body-details {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-vehicle-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-context-category {
+      font-size: 11px;
+      color: var(--brand-indigo);
+      background-color: var(--brand-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: capitalize;
+      font-weight: 600;
+      margin-top: 4px;
+      align-self: flex-start;
+    }
+
+    .card-parameters-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      padding: 4px 0;
+    }
+
+    .parameter-node {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .parameter-node strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .card-footer-pricing {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .pricing-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brand-indigo);
+    }
+
+    .pricing-unit {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .btn-edit-modifier {
+      background: none;
+      border: 1px solid var(--border-color);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit-modifier:hover {
+      border-color: var(--brand-indigo);
+      color: var(--brand-indigo);
+      background-color: var(--brand-light);
+    }
+
+    .btn-edit-modifier svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* ==========================================================================
+       7. EDIT PARAMS MODAL DIALOG OVERLAY
+       ========================================================================= */
+    .modal-viewport-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(26, 26, 46, 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-viewport-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-surface-card {
+      background-color: var(--bg-card);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transform: scale(0.96);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-viewport-overlay.open .modal-surface-card {
+      transform: scale(1);
+    }
+
+    .modal-header-section {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .btn-modal-dismiss {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .modal-body-form {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-field-group label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .form-field-group input {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-family: var(--font-main);
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .form-field-group input:focus {
+      border-color: var(--brand-indigo);
+    }
+
+    .modal-actions-footer {
+      padding: 16px 24px;
+      background-color: #fafafa;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-base-style {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-base-style.type-secondary {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-base-style.type-primary {
+      background-color: var(--brand-indigo);
+      border: none;
+      color: #ffffff;
+    }
+
+    .btn-base-style.type-primary:hover {
+      background-color: #4a21b8;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar-panel">
+    <div class="sidebar-brand-wrapper">
+      <img src="image/logo.png" alt="VroomNepal Logo" class="brand-logo-img">
+      <div class="brand-text">Vroom<span>Nepal</span></div>
+    </div>
+    <ul class="sidebar-nav-list">
+      <li>
+        <a href="dashboard_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="myvehicle_vendor.html" class="nav-link-item active-route">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          My Vehicle
+        </a>
+      </li>
+      <li>
+        <a href="booking_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Bookings
+        </a>
+      </li>
+      <li>
+        <a href="addvehicle_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          Add Vehicle
+        </a>
+      </li>
+      <li>
+        <a href="earning_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Earnings
+        </a>
+      </li>
+      <li>
+        <a href="document_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Documents
+        </a>
+      </li>
+      <li>
+        <a href="setting_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="viewport-main">
+    <nav class="top-navbar">
+      <div class="search-input-wrapper">
+        <input type="text" placeholder="Search vehicles..." class="search-field-control" id="gridSearchInput" oninput="executeClientFilters()">
+        <button class="search-action-btn" onclick="executeClientFilters()">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </div>
+      <div class="top-user-profile">
+        <div class="user-avatar-badge">VN</div>
+        <div class="user-meta-details">
+          <p class="user-profile-name">VroomNepal</p>
+          <p class="user-profile-role">Vendor Account</p>
+        </div>
+      </div>
+    </nav>
+
+    <div class="body-content-container">
+      <header class="context-header-block">
+        <div>
+          <h1 class="header-headline">My Vehicles</h1>
+          <p class="header-sub-caption">Manage and monitor your tracked rental asset fleet properties</p>
+        </div>
+        <div class="action-controls-row">
+          <select class="sort-dropdown-select" id="sortDropdownControl" onchange="executeClientFilters()">
+            <option value="default">Sort by: Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+          <button class="btn-action-trigger" onclick="window.location.href='addvehicle_vendor.html'">
+            <span>+</span> Add New Vehicle
+          </button>
+        </div>
+      </header>
+
+      <nav class="segmented-filter-bar">
+        <button class="filter-segment-tab active-segment" data-target-status="all" onclick="toggleStatusSegment(this)">All Status</button>
+        <button class="filter-segment-tab" data-target-status="active" onclick="toggleStatusSegment(this)">Active</button>
+        <button class="filter-segment-tab" data-target-status="rented" onclick="toggleStatusSegment(this)">Rented</button>
+        <button class="filter-segment-tab" data-target-status="maintenance" onclick="toggleStatusSegment(this)">Maintenance</button>
+      </nav>
+
+      <section class="vehicles-mesh-grid" id="vehiclesContainerGrid">
+        
+        <article class="vehicle-card-item" id="card-vehicle-1" data-status="active" data-price="4500" data-cat="suv">
+          <div class="card-banner-graphic">
+            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=500&q=80" alt="Scorpio Classic">
+            <span class="status-pill-badge state-active">Active</span>
+          </div>
+          <div class="card-body-details">
+            <div class="card-title-row">
+              <div>
+                <h3 class="card-vehicle-title">Mahindra Scorpio Classic</h3>
+                <span class="card-context-category">SUV</span>
+              </div>
+            </div>
+            <div class="card-parameters-list">
+              <span class="parameter-node">📅 Trips: <strong>24</strong></span>
+              <span class="parameter-node">🏁 Year: <strong>2022</strong></span>
+              <span class="parameter-node">⚡ Fuel: <strong>Diesel</strong></span>
+              <span class="parameter-node">🚗 Seats: <strong>7</strong></span>
+            </div>
+            <div class="card-footer-pricing">
+              <p class="pricing-label">Rs. 4,500 <span class="pricing-unit">per day</span></p>
+              <button class="btn-edit-modifier" onclick="openEditParamsModal('card-vehicle-1')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vehicle-card-item" id="card-vehicle-2" data-status="rented" data-price="2500" data-cat="sedan">
+          <div class="card-banner-graphic">
+            <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=500&q=80" alt="Honda City">
+            <span class="status-pill-badge state-rented">Rented</span>
+          </div>
+          <div class="card-body-details">
+            <div class="card-title-row">
+              <div>
+                <h3 class="card-vehicle-title">Honda City VTEC</h3>
+                <span class="card-context-category">Sedan</span>
+              </div>
+            </div>
+            <div class="card-parameters-list">
+              <span class="parameter-node">📅 Trips: <strong>48</strong></span>
+              <span class="parameter-node">🏁 Year: <strong>2021</strong></span>
+              <span class="parameter-node">⚡ Fuel: <strong>Petrol</strong></span>
+              <span class="parameter-node">🚗 Seats: <strong>5</strong></span>
+            </div>
+            <div class="card-footer-pricing">
+              <p class="pricing-label">Rs. 2,500 <span class="pricing-unit">per day</span></p>
+              <button class="btn-edit-modifier" onclick="openEditParamsModal('card-vehicle-2')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vehicle-card-item" id="card-vehicle-3" data-status="maintenance" data-price="5500" data-cat="suv">
+          <div class="card-banner-graphic">
+            <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=500&q=80" alt="Toyota Hilux">
+            <span class="status-pill-badge state-maintenance">Maintenance</span>
+          </div>
+          <div class="card-body-details">
+            <div class="card-title-row">
+              <div>
+                <h3 class="card-vehicle-title">Toyota Hilux Vigo</h3>
+                <span class="card-context-category">SUV</span>
+              </div>
+            </div>
+            <div class="card-parameters-list">
+              <span class="parameter-node">📅 Trips: <strong>12</strong></span>
+              <span class="parameter-node">🏁 Year: <strong>2019</strong></span>
+              <span class="parameter-node">⚡ Fuel: <strong>Diesel</strong></span>
+              <span class="parameter-node">🚗 Seats: <strong>5</strong></span>
+            </div>
+            <div class="card-footer-pricing">
+              <p class="pricing-label">Rs. 5,500 <span class="pricing-unit">per day</span></p>
+              <button class="btn-edit-modifier" onclick="openEditParamsModal('card-vehicle-3')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vehicle-card-item" id="card-vehicle-4" data-status="active" data-price="2000" data-cat="hatchback">
+          <div class="card-banner-graphic">
+            <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=500&q=80" alt="Maruti Suzuki Swift">
+            <span class="status-pill-badge state-active">Active</span>
+          </div>
+          <div class="card-body-details">
+            <div class="card-title-row">
+              <div>
+                <h3 class="card-vehicle-title">Maruti Suzuki Swift</h3>
+                <span class="card-context-category">Hatchback</span>
+              </div>
+            </div>
+            <div class="card-parameters-list">
+              <span class="parameter-node">📅 Trips: <strong>89</strong></span>
+              <span class="parameter-node">🏁 Year: <strong>2020</strong></span>
+              <span class="parameter-node">⚡ Fuel: <strong>Petrol</strong></span>
+              <span class="parameter-node">🚗 Seats: <strong>5</strong></span>
+            </div>
+            <div class="card-footer-pricing">
+              <p class="pricing-label">Rs. 2,000 <span class="pricing-unit">per day</span></p>
+              <button class="btn-edit-modifier" onclick="openEditParamsModal('card-vehicle-4')">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+      </section>
+    </div>
+  </main>
+
+  <div class="modal-viewport-overlay" id="editModalOverlay">
+    <div class="modal-surface-card">
+      <div class="modal-header-section">
+        <h2 class="modal-title-text">Edit Vehicle Parameters</h2>
+        <button class="btn-modal-dismiss" onclick="closeEditModal()">&times;</button>
+      </div>
+      <div class="modal-body-form">
+        <div class="form-field-group">
+          <label for="modalVehicleTitle">Vehicle Title / Make</label>
+          <input type="text" id="modalVehicleTitle">
+        </div>
+        <div class="form-field-group">
+          <label for="modalVehiclePrice">Rental Value (Rs. per day)</label>
+          <input type="number" id="modalVehiclePrice">
+        </div>
+        <div class="form-field-group">
+          <label for="modalVehicleCategory">Classification Group</label>
+          <input type="text" id="modalVehicleCategory">
+        </div>
+      </div>
+      <div class="modal-actions-footer">
+        <button class="btn-base-style type-secondary" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-base-style type-primary" onclick="saveVehicleEdits()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeFilteringState = "all";
+    let activeEditingCardId = null;
+
+    function toggleStatusSegment(selectedTabButton) {
+      document.querySelectorAll('.filter-segment-tab').forEach(tab => {
+        tab.classList.remove('active-segment');
+      });
+      selectedTabButton.classList.add('active-segment');
+      activeFilteringState = selectedTabButton.getAttribute('data-target-status');
+      executeClientFilters();
+    }
+
+    function executeClientFilters() {
+      const parentGrid = document.getElementById('vehiclesContainerGrid');
+      const searchString = document.getElementById('gridSearchInput').value.trim().toLowerCase();
+      const sortingCriterion = document.getElementById('sortDropdownControl').value;
+      
+      let individualCards = Array.from(document.querySelectorAll('.vehicle-card-item'));
+
+      individualCards.forEach(card => {
+        const structuralStatus = card.getAttribute('data-status').toLowerCase();
+        const structuralTitle = card.querySelector('.card-vehicle-title').textContent.toLowerCase();
+        const structuralCategory = card.getAttribute('data-cat').toLowerCase();
+
+        const statusMatch = (activeFilteringState === "all" || structuralStatus === activeFilteringState);
+        const searchMatch = (structuralTitle.includes(searchString) || structuralCategory.includes(searchString));
+
+        if (statusMatch && searchMatch) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      if (sortingCriterion === "price-low") {
+        individualCards.sort((cardA, cardB) => parseInt(cardA.getAttribute('data-price'), 10) - parseInt(cardA.getAttribute('data-price'), 10));
+      } else if (sortingCriterion === "price-high") {
+        individualCards.sort((cardA, cardB) => parseInt(cardB.getAttribute('data-price'), 10) - parseInt(cardA.getAttribute('data-price'), 10));
+      }
+
+      individualCards.forEach(card => parentGrid.appendChild(card));
+    }
+
+    function openEditParamsModal(targetCardId) {
+      activeEditingCardId = targetCardId;
+      const originCardNode = document.getElementById(targetCardId);
+      if (!originCardNode) return;
+
+      const currentTitle = originCardNode.querySelector('.card-vehicle-title').textContent;
+      const currentPrice = originCardNode.getAttribute('data-price');
+      const currentCategory = originCardNode.getAttribute('data-cat');
+
+      document.getElementById('modalVehicleTitle').value = currentTitle;
+      document.getElementById('modalVehiclePrice').value = currentPrice;
+      document.getElementById('modalVehicleCategory').value = currentCategory;
+
+      document.getElementById('editModalOverlay').classList.add('open');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModalOverlay').classList.remove('open');
+      activeEditingCardId = null;
+    }
+
+    function saveVehicleEdits() {
+      if (!activeEditingCardId) return;
+      const targetCard = document.getElementById(activeEditingCardId);
+      if (!targetCard) return;
+
+      const newTitle = document.getElementById('modalVehicleTitle').value.trim();
+      const newPrice = document.getElementById('modalVehiclePrice').value.trim();
+      const newCategory = document.getElementById('modalVehicleCategory').value.trim().toLowerCase();
+
+      if (!newTitle || !newPrice) {
+        alert("Please fill in the fields correctly.");
+        return;
+      }
+
+      targetCard.querySelector('.card-vehicle-title').textContent = newTitle;
+      targetCard.setAttribute('data-price', newPrice);
+      targetCard.setAttribute('data-cat', newCategory);
+      targetCard.querySelector('.card-context-category').textContent = newCategory;
+      
+      targetCard.querySelector('.pricing-label').innerHTML = `Rs. ${parseInt(newPrice, 10).toLocaleString()} <span class=\"pricing-unit\">per day</span>`;
+
+      closeEditModal();
+      executeClientFilters();
+    }
+  </script>
+</body>
+</html>

@@ -3,444 +3,653 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Bookings Management</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Bookings Management - VroomNepal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: #f5f6fa; color: #1a1a2e; display: flex; min-height: 100vh; }
+  body { font-family: 'Inter', sans-serif; background: #f5f6fa; color: #1a1a2e; display: flex; min-height: 100vh; overflow-x: hidden; }
 
-  /* ── SIDEBAR ── */
+  /* ── SIDEBAR PANEL ARCHITECTURE ── */
   .sidebar {
-    width: 200px; min-width: 200px; background: #fff;
+    width: 260px; min-width: 260px; background: #fff;
     display: flex; flex-direction: column;
-    border-right: 1px solid #eee; padding: 18px 0; position: fixed;
+    border-right: 1px solid #e8e8f0; position: fixed;
     top: 0; left: 0; height: 100vh; z-index: 100;
   }
-  .logo {
-    display: flex; align-items: center; gap: 8px;
-    padding: 0 18px 22px 18px; border-bottom: 1px solid #f0f0f0;
+  
+  .sidebar-brand-wrapper {
+    height: 72px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #f0f0f5; gap: 10px;
   }
-  .logo-icon {
-    width: 32px; height: 32px; background: #6c63ff;
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  .brand-logo-img { height: 32px; width: auto; object-fit: contain; display: block; }
+  .brand-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.7px; color: #1a1a2e; line-height: 1; }
+  .brand-text span { color: #7c5cf6; font-weight: 400; }
+
+  .nav { list-style: none; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; height: calc(100vh - 72px); }
+  .nav-link-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #6b6b80;
+    text-decoration: none; font-size: 14px; font-weight: 500; transition: background 0.15s, color 0.15s;
   }
-  .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
-  .logo-text { font-size: 13px; font-weight: 700; color: #1a1a2e; line-height: 1.2; }
-  .logo-text span { display: block; font-size: 10px; font-weight: 400; color: #aaa; }
+  .nav-link-item svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+  .nav-link-item:hover { background: #f5f3ff; color: #5b2be0; }
+  .nav-link-item.active-route { background: #f0ecff; color: #5b2be0; font-weight: 600; }
+  .nav-link-item.logout-link:hover { background: #fee2e2 !important; }
 
-  .nav { flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; }
-  .nav a {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: 8px;
-    font-size: 13px; font-weight: 500; color: #666;
-    text-decoration: none; transition: background .15s, color .15s;
-  }
-  .nav a:hover { background: #f4f3ff; color: #6c63ff; }
-  .nav a.active { background: #6c63ff; color: #fff; }
-  .nav a svg { width: 16px; height: 16px; flex-shrink: 0; }
-  .nav a.active svg { fill: #fff; }
-  .nav a:not(.active) svg { fill: #888; }
+  /* ── MAIN WORKSPACE CONTENT WRAPPER ── */
+  .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 100vh; }
 
-  .sidebar-bottom { padding: 10px; border-top: 1px solid #f0f0f0; display: flex; flex-direction: column; gap: 2px; }
-  .sidebar-bottom a {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: 8px;
-    font-size: 13px; font-weight: 500; color: #666;
-    text-decoration: none; transition: background .15s;
-  }
-  .sidebar-bottom a:hover { background: #f4f3ff; color: #6c63ff; }
-  .sidebar-bottom a svg { width: 16px; height: 16px; fill: #888; }
-
-  /* ── MAIN ── */
-  .main { margin-left: 200px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-
-  /* TOP BAR */
+  /* TOP HEADER BAR */
   .topbar {
-    background: #fff; border-bottom: 1px solid #eee;
-    padding: 12px 28px; display: flex; align-items: center;
-    justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50;
+    background: #fff; border-bottom: 1px solid #e8e8f0; padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90;
   }
-  .search-wrap {
-    display: flex; align-items: center; gap: 8px;
-    background: #f5f6fa; border-radius: 8px; padding: 8px 14px;
-    width: 240px;
+  .search-wrap { position: relative; display: flex; align-items: center; }
+  .search-field-control {
+    width: 260px; height: 36px; background-color: #f8f9fa; border: 1px solid #e8e8f0;
+    border-radius: 8px; padding: 0 42px 0 14px; font-family: inherit; font-size: 13px; color: #1a1a2e; outline: none; transition: border-color 0.2s;
   }
-  .search-wrap svg { width: 15px; height: 15px; fill: #bbb; flex-shrink: 0; }
-  .search-wrap input {
-    border: none; background: transparent; outline: none;
-    font-size: 12.5px; color: #555; width: 100%;
+  .search-field-control:focus { border-color: #5b2be0; background-color: #fff; }
+  .search-action-btn {
+    position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: #5b2be0;
+    border: none; border-radius: 6px; width: 28px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;
   }
-  .topbar-right { display: flex; align-items: center; gap: 14px; }
-  .notif-btn {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: #f5f6fa; border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .notif-btn svg { width: 16px; height: 16px; fill: #888; }
-  .notif-dot {
-    width: 7px; height: 7px; background: #ff4757;
-    border-radius: 50%; position: absolute; top: 5px; right: 5px;
-    border: 1.5px solid #fff;
-  }
-  .user-chip {
-    display: flex; align-items: center; gap: 8px; cursor: pointer;
-  }
-  .user-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: #6c63ff; display: flex; align-items: center;
-    justify-content: center; font-size: 12px; font-weight: 700; color: #fff;
-  }
-  .user-info { line-height: 1.3; }
+  .search-action-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .user-chip { display: flex; align-items: center; gap: 10px; background: #f5f6fa; border: 1px solid #e8e8f0; border-radius: 10px; padding: 5px 12px 5px 5px; }
+  .user-avatar { width: 26px; height: 26px; border-radius: 6px; background: linear-gradient(135deg, #5b2be0, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; font-family: 'Syne', sans-serif; }
+  .user-info { line-height: 1.2; }
   .user-info .name { font-size: 12.5px; font-weight: 600; color: #1a1a2e; }
-  .user-info .role { font-size: 10.5px; color: #aaa; }
+  .user-info .role { font-size: 10.5px; color: #6b7280; }
 
-  /* ── CONTENT ── */
-  .content { padding: 28px; flex: 1; }
-
-  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
-  .page-title { font-size: 22px; font-weight: 700; color: #1a1a2e; }
-  .page-sub { font-size: 12.5px; color: #aaa; margin-top: 3px; max-width: 380px; line-height: 1.5; }
+  /* VIEW BODY COMPONENTS */
+  .content { padding: 28px 32px 40px; flex: 1; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+  .page-sub { font-size: 13px; color: #6b7280; margin-top: 3px; }
+  
   .btn-add {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: #6c63ff; border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; background-color: #5b2be0;
+    color: #fff; border: none; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
   }
-  .btn-add svg { width: 18px; height: 18px; fill: #fff; }
+  .btn-add:hover { background-color: #4a21b8; }
 
-  /* STAT CARDS */
-  .stat-row { display: flex; gap: 16px; margin-bottom: 24px; }
-  .stat-card {
-    background: #fff; border-radius: 12px; padding: 16px 20px;
-    display: flex; align-items: center; gap: 14px; flex: 1;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-  }
-  .stat-card.highlight { background: #6c63ff; }
-  .stat-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
+  /* OVERVIEW METRICS STATUS COUNTERS */
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: #fff; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e8e8f0; }
+  .stat-card.highlight { background: #5b2be0; border-color: #5b2be0; }
+  .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .stat-icon.blue { background: #e8f4ff; }
   .stat-icon.green { background: #e8fff3; }
   .stat-icon.purple { background: rgba(255,255,255,.2); }
   .stat-icon.yellow { background: #fffbe8; }
-  .stat-icon svg { width: 20px; height: 20px; }
-  .stat-info .label { font-size: 11px; color: #aaa; font-weight: 500; margin-bottom: 4px; }
+  .stat-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .stat-icon.blue svg { stroke: #3a86ff; }
+  .stat-icon.green svg { stroke: #22c55e; }
+  .stat-icon.yellow svg { stroke: #f97316; }
+  .stat-icon.purple svg { stroke: #fff; }
+  .stat-info .label { font-size: 11px; color: #6b7280; font-weight: 500; margin-bottom: 4px; }
   .stat-card.highlight .stat-info .label { color: rgba(255,255,255,.75); }
   .stat-info .value { font-size: 22px; font-weight: 700; color: #1a1a2e; line-height: 1; }
-  .stat-card.highlight .stat-info .value { color: #fff; font-size: 18px; }
+  .stat-card.highlight .stat-info .value { color: #fff; }
 
-  /* TABS */
-  .tabs-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .tabs { display: flex; gap: 2px; background: #f0f0f5; border-radius: 8px; padding: 3px; }
+  /* TAB COMPONENT & INTERACTIVE FILTER ACTIONS OVERLAYS */
+  .tabs-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e8e8f0; margin-bottom: 24px; position: relative; }
+  .tabs { display: flex; gap: 20px; }
   .tab {
-    padding: 6px 14px; border-radius: 6px; font-size: 12.5px;
-    font-weight: 500; cursor: pointer; color: #777; border: none;
-    background: transparent; transition: background .15s, color .15s;
+    background: none; border: none; padding-bottom: 12px; font-family: inherit; font-size: 13px;
+    font-weight: 600; color: #6b7280; cursor: pointer; position: relative; transition: color .2s;
   }
-  .tab.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-  .tab-actions { display: flex; gap: 8px; }
+  .tab:hover { color: #1a1a2e; }
+  .tab.active { color: #5b2be0; }
+  .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background-color: #5b2be0; }
+  
+  .tab-actions { display: flex; gap: 10px; padding-bottom: 8px; position: relative; }
   .btn-sm {
-    display: flex; align-items: center; gap: 6px;
-    padding: 7px 14px; border-radius: 8px; font-size: 12.5px;
-    font-weight: 500; cursor: pointer; border: 1px solid #e5e5e5;
-    background: #fff; color: #555; transition: background .15s;
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #e8e8f0;
+    background-color: #fff; border-radius: 8px; font-size: 12px; color: #1a1a2e; cursor: pointer; transition: background 0.15s;
   }
-  .btn-sm:hover { background: #f5f6fa; }
-  .btn-sm svg { width: 14px; height: 14px; fill: #888; }
+  .btn-sm:hover { background: #f8f9fa; }
+  .btn-sm svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-  /* TABLE */
-  .table-wrap {
-    background: #fff; border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05); overflow: hidden;
+  /* INTERACTIVE FILTER ACTION DROPDOWN POPOVER */
+  .filter-popover-panel {
+    position: absolute; right: 85px; top: 36px; width: 220px; background: #fff; border: 1px solid #e8e8f0;
+    border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); padding: 14px; z-index: 110; display: none; flex-direction: column; gap: 10px;
   }
+  .filter-popover-panel.active { display: flex; }
+  .filter-group-label { font-size: 11px; font-weight: 700; color: #9aa2b1; text-transform: uppercase; letter-spacing: 0.3px; }
+  .filter-select-input {
+    width: 100%; height: 32px; border-radius: 6px; border: 1px solid #e8e8f0; background: #f8f9fa;
+    padding: 0 8px; font-family: inherit; font-size: 12.5px; color: #1a1a2e; outline: none;
+  }
+
+  /* SYSTEM MESH SYSTEM DATA TABLE GRID */
+  .table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e8e8f0; overflow: visible; }
   table { width: 100%; border-collapse: collapse; }
-  thead tr { border-bottom: 1px solid #f0f0f0; }
-  thead th {
-    font-size: 11px; font-weight: 600; color: #aaa;
-    text-transform: uppercase; letter-spacing: .5px;
-    padding: 13px 16px; text-align: left;
-  }
-  tbody tr { border-bottom: 1px solid #f9f9f9; transition: background .1s; }
+  thead tr { border-bottom: 1px solid #e8e8f0; background: #fafafa; }
+  thead th { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; padding: 14px 20px; text-align: left; }
+  tbody tr { border-bottom: 1px solid #e8e8f0; transition: background .1s; cursor: pointer; }
   tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: #fafafa; }
-  tbody td { padding: 12px 16px; font-size: 13px; color: #333; vertical-align: middle; }
-
+  tbody tr:hover { background: #fcfcff; }
+  tbody td { padding: 14px 20px; font-size: 13px; color: #1a1a2e; vertical-align: middle; position: relative; }
+  
   .customer-cell { display: flex; align-items: center; gap: 10px; }
-  .avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
-  .cust-name { font-size: 12.5px; font-weight: 600; color: #1a1a2e; line-height: 1.2; }
-  .cust-id { font-size: 11px; color: #bbb; }
-
-  .vehicle-name { font-size: 12.5px; font-weight: 500; color: #333; }
-  .schedule-text { font-size: 12px; color: #666; line-height: 1.5; }
-  .amount { font-size: 13px; font-weight: 600; color: #1a1a2e; }
-
-  .badge {
-    display: inline-block; padding: 4px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 600;
-  }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .cust-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+  .vehicle-name { font-size: 13px; font-weight: 500; }
+  .schedule-text { font-size: 12.5px; color: #6b7280; }
+  .amount { font-size: 13px; font-weight: 600; }
+  
+  .badge { display: inline-flex; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
   .badge.pending { background: #fff4e5; color: #f5a623; }
-  .badge.approved { background: #e8fff3; color: #27ae60; }
-  .badge.completed { background: #f0f0f5; color: #888; }
-  .badge.cancelled { background: #ffe8e8; color: #e74c3c; }
+  .badge.approved { background: #e0ecff; color: #3a86ff; }
+  .badge.completed { background: #e8fff3; color: #22c55e; }
+  .badge.cancelled { background: #fee2e2; color: #ff4757; }
 
-  .action-btn {
-    background: none; border: none; cursor: pointer; padding: 4px;
-    border-radius: 4px; color: #bbb; font-size: 18px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
+  /* ROW OPERATIONS DROPDOWN DIALOGS */
+  .action-menu-container { position: relative; display: inline-block; }
+  .action-trigger-btn {
+    background: none; border: none; font-size: 18px; font-weight: 700; color: #aaa;
+    cursor: pointer; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px;
   }
-  .action-btn:hover { background: #f0f0f5; color: #555; }
+  .action-trigger-btn:hover { background: #f0f0f5; color: #1a1a2e; }
+  .action-dropdown-menu {
+    position: absolute; right: 0; top: 100%; margin-top: 4px; width: 140px; background: #fff;
+    border: 1px solid #e8e8f0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 120; display: none; flex-direction: column; padding: 4px 0;
+  }
+  .action-dropdown-menu.visible { display: flex; }
+  .action-menu-item {
+    background: none; border: none; text-align: left; padding: 8px 14px; font-family: inherit; font-size: 12.5px; color: #444; cursor: pointer;
+  }
+  .action-menu-item:hover { background: #f5f6fa; color: #5b2be0; }
+  .action-menu-item.danger { color: #ff4757; }
+  .action-menu-item.danger:hover { background: #fee2e2; }
 
-  /* PAGINATION */
-  .pagination-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; border-top: 1px solid #f0f0f0;
+  /* ── MODAL OVERLAY PLATFORM GRAPHICS ── */
+  .modal-backdrop-blur {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 26, 0.4);
+    backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;
   }
-  .showing-text { font-size: 12px; color: #aaa; }
-  .pages { display: flex; gap: 4px; }
-  .page-btn {
-    width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e5e5;
-    background: #fff; font-size: 12px; font-weight: 500; color: #666;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
+  .modal-backdrop-blur.open { display: flex; }
+  
+  /* PREMIUM BOOKINGS VIEWER PANEL */
+  .details-card-container {
+    background: #ffffff; width: 100%; max-width: 440px; border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12); border: 1px solid #eef0f5; overflow: hidden; position: relative; animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .page-btn.active { background: #6c63ff; color: #fff; border-color: #6c63ff; }
-  .page-btn:hover:not(.active) { background: #f5f6fa; }
-  .page-btn svg { width: 12px; height: 12px; fill: #888; }
+  @keyframes modalPop { from { transform: scale(0.96) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+  .card-premium-header {
+    background: linear-gradient(135deg, #5147e8, #7c5cf6); padding: 24px; color: #ffffff; position: relative;
+  }
+  .card-close-x {
+    position: absolute; right: 20px; top: 20px; background: rgba(255, 255, 255, 0.15); border: none;
+    color: #ffffff; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+  }
+  .card-close-x:hover { background: rgba(255, 255, 255, 0.3); }
+  
+  .card-meta-tag { font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; color: rgba(255, 255, 255, 0.75); margin-bottom: 4px; }
+  .card-main-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+  
+  .card-body-scroller { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+  .info-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .data-field-item { display: flex; flex-direction: column; gap: 4px; }
+  .data-field-item.full-width { grid-column: span 2; }
+  .field-label { font-size: 11px; font-weight: 600; color: #9aa2b1; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-content-text { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+  
+  .inline-badge-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+  .divider-line { height: 1px; background: #f0f2f7; width: 100%; }
+  
+  .financials-total-block {
+    background: #f8f9fd; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eef0f6;
+  }
+  .total-price-tag { font-size: 18px; font-weight: 700; color: #5b2be0; }
+
+  /* SYSTEM FOOTER GRID NAVIGATION CONTROLS */
+  .pagination-container { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: #fff; border-top: 1px solid #e8e8f0; }
+  .pagination-info { font-size: 13px; color: #6b7280; }
+  .pagination-buttons { display: flex; gap: 6px; }
+  .page-control-btn {
+    min-width: 32px; height: 32px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid #e8e8f0; background: #fff; border-radius: 6px; font-size: 13px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  .page-control-btn:hover:not(.disabled) { background: #f8f9fa; border-color: #d1d1e0; }
+  .page-control-btn.active-page { background: #5b2be0; border-color: #5b2be0; color: #fff; font-weight: 600; }
+  .page-control-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+  .page-control-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    </div>
-    <div class="logo-text">VroomVault<span>Premium Fleet</span></div>
-  </div>
-
-  <nav class="nav">
-    <a href="dashboard_vendor.html">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </a>
-    <a href="myvehicle_vendor.html">
-      <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><circle cx="15.5" cy="17.5" r="2.5"/><circle cx="5.5" cy="17.5" r="2.5"/></svg>
-      My Vehicles
-    </a>
-    <a href="addvehicle_vendor.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Add Vehicle
-    </a>
-    <a href="booking_vendor.html" class="active">
-      <svg viewBox="0 0 24 24" fill="white"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-      Bookings
-    </a>
-    <a href="earning_vendor.html">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Earnings
-    </a>
-    <a href="document_vendor.html">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Documents
-    </a>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <a href="setting_vendor.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      Settings
-    </a>
-    <a href="login_vendor.html">
-      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Logout
-    </a>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="search-wrap">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" placeholder="Search bookings..."/>
-    </div>
-    <div class="topbar-right">
-      <button class="notif-btn">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-dot"></span>
-      </button>
-      <div class="user-chip">
-        <div class="user-avatar">JD</div>
-        <div class="user-info">
-          <div class="name">Jane Doe</div>
-          <div class="role">Vendor</div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- CONTENT -->
-  <div class="content">
-
-    <!-- PAGE HEADER -->
-    <div class="page-header">
-      <div>
-        <div class="page-title">Bookings Management</div>
-        <div class="page-sub">Monitor your fleet's activity. Oversee incoming requests, active rentals, and finalize completed journeys in our premium concierge panel.</div>
-      </div>
-      <button class="btn-add">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
+  <aside class="sidebar">
+    <div class="sidebar-brand-wrapper">
+      <img src="image/logo.png" alt="VroomNepal Logo" class="brand-logo-img">
+      <div class="brand-text">Vroom<span>Nepal</span></div>
     </div>
 
-    <!-- STAT CARDS -->
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-icon blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#3a86ff" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-        </div>
-        <div class="stat-info">
-          <div class="label">Pending Approvals</div>
-          <div class="value">04</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        </div>
-        <div class="stat-info">
-          <div class="label">Approved Today</div>
-          <div class="value">12</div>
-        </div>
-      </div>
-      <div class="stat-card highlight">
-        <div class="stat-icon purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div class="stat-info">
-          <div class="label">Estimated Earnings</div>
-          <div class="value">Rs.2,44,850<br/>.00</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon yellow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="stat-info">
-          <div class="label">Vendor Rating</div>
-          <div class="value">4.92</div>
-        </div>
-      </div>
-    </div>
+    <ul class="nav">
+      <li>
+        <a href="dashboard_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="myvehicle_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          My Vehicle
+        </a>
+      </li>
+      <li>
+        <a href="booking_vendor.html" class="nav-link-item active-route">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Bookings
+        </a>
+      </li>
+      <li>
+        <a href="addvehicle_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          Add Vehicle
+        </a>
+      </li>
+      <li>
+        <a href="earning_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Earnings
+        </a>
+      </li>
+      <li>
+        <a href="document_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Documents
+        </a>
+      </li>
+      <li>
+        <a href="setting_vendor.html" class="nav-link-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </a>
+      </li>
+      <li style="margin-top: auto; padding-top: 14px; border-top: 1px solid #f0f0f5;">
+        <a href="login.html" class="nav-link-item logout-link" onclick="handleLogout(event)">
+          <svg viewBox="0 0 24 24" style="stroke: #ff4757;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span style="color: #ff4757; font-weight: 600;">Log Out</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
 
-    <!-- TABS + ACTIONS -->
-    <div class="tabs-row">
-      <div class="tabs">
-        <button class="tab active">All Bookings</button>
-        <button class="tab">Pending</button>
-        <button class="tab">Approved</button>
-        <button class="tab">Completed</button>
-        <button class="tab">Cancelled</button>
-      </div>
-      <div class="tab-actions">
-        <button class="btn-sm">
-          <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Filter
-        </button>
-        <button class="btn-sm">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export
+  <main class="main">
+    <header class="topbar">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Search bookings, customers..." class="search-field-control" />
+        <button class="search-action-btn" aria-label="Submit Search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
       </div>
-    </div>
 
-    <!-- TABLE -->
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Schedule</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="bookingsBody"></tbody>
-      </table>
-      <div class="pagination-row">
-        <span class="showing-text">Showing 1-18 of 98 results</span>
-        <div class="pages">
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="user-avatar">VN</div>
+          <div class="user-info">
+            <div class="name">VroomNepal</div>
+            <div class="role">Vendor Account</div>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-
-<script>
-const bookings = [
-  { initials:'SM', color:'#6c63ff', name:'Sophia Mitchell',  vehicle:'Tesla Model S',      schedule:'Oct 12 - Oct 15, 2023', amount:'Rs.1,450.00', status:'pending'   },
-  { initials:'MT', color:'#3a86ff', name:'Marcus Thorne',    vehicle:'Porsche 911',        schedule:'Oct 14 - Oct 19, 2023', amount:'Rs.2,100.00', status:'pending'   },
-  { initials:'OB', color:'#27ae60', name:'Oliver Bennett',   vehicle:'Range Rover Sport',  schedule:'Oct 05 - Oct 10, 2023', amount:'Rs.3,200.00', status:'approved'  },
-  { initials:'IR', color:'#e74c3c', name:'Isabella Rossi',   vehicle:'Audi RS7',           schedule:'Oct 09 - Oct 13, 2023', amount:'Rs.1,100.00', status:'approved'  },
-  { initials:'NS', color:'#f39c12', name:'Noah Smith',       vehicle:'Kinetic Tensile K',  schedule:'Sep 28 - Oct 03, 2023', amount:'Rs.4,500.00', status:'completed' },
-  { initials:'MG', color:'#9b59b6', name:'Mia Garcia',       vehicle:'Kinetic O-Sprint',   schedule:'Sep 25 - Sep 27, 2023', amount:'Rs.860.00',  status:'completed' },
-  { initials:'EH', color:'#e67e22', name:'Ethan Hunt',       vehicle:'Escalade ESV',       schedule:'Oct 10 - Oct 13, 2023', amount:'Rs.2,800.00', status:'cancelled' },
-  { initials:'HV', color:'#1abc9c', name:'Harper Vance',     vehicle:'BMW M8',             schedule:'Oct 05 - Oct 07, 2023', amount:'Rs.1,900.00', status:'cancelled' },
-  { initials:'ER', color:'#3498db', name:'Elena Rodriguez',  vehicle:'Lucid Air',          schedule:'Oct 20 - Oct 25, 2023', amount:'Rs.2,400.00', status:'pending'   },
-  { initials:'JW', color:'#e74c3c', name:'Jameson Wu',       vehicle:'BMW M4',             schedule:'Oct 18 - Oct 21, 2023', amount:'Rs.1,750.00', status:'pending'   },
-  { initials:'LC', color:'#27ae60', name:'Liam Chen',        vehicle:'Kinetic Volt X',     schedule:'Oct 11 - Oct 15, 2023', amount:'Rs.1,250.00', status:'approved'  },
-  { initials:'AD', color:'#f39c12', name:'Ava Dubois',       vehicle:'Kinetic E-Core',     schedule:'Oct 15 - Oct 18, 2023', amount:'Rs.1,600.00', status:'approved'  },
-  { initials:'LM', color:'#9b59b6', name:'Lucas Müller',     vehicle:'Mercedes-AMG G63',   schedule:'Sep 30 - Sep 23, 2023', amount:'Rs.6,400.00', status:'completed' },
-  { initials:'CL', color:'#e67e22', name:'Chloe Lefebvre',   vehicle:'Taycan Turbo S',     schedule:'Sep 15 - Sep 18, 2023', amount:'Rs.3,000.00', status:'completed' },
-  { initials:'MR', color:'#6c63ff', name:'Mason Reed',       vehicle:'Range Rover',        schedule:'Oct 11 - Oct 14, 2023', amount:'Rs.1,400.00', status:'cancelled' },
-  { initials:'EC', color:'#3a86ff', name:'Evelyn Clarke',    vehicle:'Aether Velocity',    schedule:'Oct 01 - Oct 05, 2023', amount:'Rs.2,250.00', status:'cancelled' },
-];
-
-const statusLabel = { pending:'Pending', approved:'Approved', completed:'Completed', cancelled:'Cancelled' };
-const tbody = document.getElementById('bookingsBody');
-
-bookings.forEach(b => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>
-      <div class="customer-cell">
-        <div class="avatar" style="background:${b.color}">${b.initials}</div>
+    <div class="content">
+      <div class="page-header">
         <div>
-          <div class="cust-name">${b.name}</div>
+          <h1 class="page-title">Bookings Management</h1>
+          <p class="page-sub">Monitor global reservation schedules, verification requests, and processing steps.</p>
+        </div>
+        <button class="btn-add"><span>+</span> Add Booking</button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          </div>
+          <div class="stat-info">
+            <div class="label">Pending Approvals</div>
+            <div class="value" id="countPending">00</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <div class="stat-info">
+            <div class="label">Approved Today</div>
+            <div class="value" id="countApproved">00</div>
+          </div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div class="stat-info">
+            <div class="label">Estimated Earnings</div>
+            <div class="value" id="totalEarnings">Rs. 0.00</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <div class="stat-info">
+            <div class="label">Vendor Rating</div>
+            <div class="value">4.92</div>
+          </div>
         </div>
       </div>
-    </td>
-    <td><div class="vehicle-name">${b.vehicle}</div></td>
-    <td><div class="schedule-text">${b.schedule}</div></td>
-    <td><div class="amount">${b.amount}</div></td>
-    <td><span class="badge ${b.status}">${statusLabel[b.status]}</span></td>
-    <td><button class="action-btn">⋮</button></td>
-  `;
-  tbody.appendChild(tr);
-});
 
-// Tab switching
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-  });
-});
-</script>
+      <div class="tabs-row">
+        <div class="tabs" id="tabBar">
+          <button class="tab active" data-filter="all">All Bookings</button>
+          <button class="tab" data-filter="pending">Pending</button>
+          <button class="tab" data-filter="approved">Approved</button>
+          <button class="tab" data-filter="completed">Completed</button>
+          <button class="tab" data-filter="cancelled">Cancelled</button>
+        </div>
+        <div class="tab-actions">
+          <button class="btn-sm" id="filterButtonToggle">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            Filter
+          </button>
+          <button class="btn-sm">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export
+          </button>
+          
+          <div class="filter-popover-panel" id="filterPopover">
+            <div class="filter-group-label">Vehicle Tier Group</div>
+            <select class="filter-select-input" id="filterVehicleSelect">
+              <option value="all">All Fleet Types</option>
+              <option value="tesla">Tesla Collection</option>
+              <option value="bmw">BMW Performance</option>
+              <option value="kinetic">Kinetic EV Scooters</option>
+              <option value="range rover">Range Rover</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Vehicle</th>
+              <th>Schedule</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsBody">
+            </tbody>
+        </table>
+        
+        <div class="pagination-container">
+          <div class="pagination-info" id="paginationInfo">Showing 0-0 of 0 entries</div>
+          <div class="pagination-buttons" id="paginationButtons">
+            </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop-blur" id="detailsModalOverlay">
+    <div class="details-card-container" onclick="event.stopPropagation()">
+      <div class="card-premium-header">
+        <button class="card-close-x" id="modalCloseBtn">&times;</button>
+        <div class="card-meta-tag" id="mBookingId">Booking #VN-00104</div>
+        <div class="card-main-title" id="mVehicleName">Tesla Model S</div>
+      </div>
+      
+      <div class="card-body-scroller">
+        <div class="info-data-grid">
+          <div class="data-field-item">
+            <span class="field-label">Customer Name</span>
+            <span class="field-content-text" id="mCustName">Sophia Mitchell</span>
+          </div>
+          <div class="data-field-item">
+            <span class="field-label">Verification Status</span>
+            <div class="inline-badge-row" id="mBadgeContainer">
+              <span class="badge pending">Pending</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="divider-line"></div>
+        
+        <div class="info-data-grid">
+          <div class="data-field-item full-width">
+            <span class="field-label">Reservation Schedule Timeline</span>
+            <span class="field-content-text" id="mSchedule">Oct 12 - Oct 15, 2023</span>
+          </div>
+          <div class="data-field-item">
+            <span class="field-label">Collection Location</span>
+            <span class="field-content-text">Kathmandu Depot</span>
+          </div>
+          <div class="data-field-item">
+            <span class="field-label">Insurance Waiver</span>
+            <span class="field-content-text">Comprehensive</span>
+          </div>
+        </div>
+        
+        <div class="divider-line"></div>
+        
+        <div class="financials-total-block">
+          <span class="field-label" style="margin-bottom:0;">Gross Settlement Fee</span>
+          <span class="total-price-tag" id="mTotalAmount">Rs.1,450.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System Data Matrix Object Arrays Array List Setup
+    const bookings = [
+      { id: 101, initials:'SM', color:'#6c63ff', name:'Sophia Mitchell',  vehicle:'Tesla Model S',      schedule:'Oct 12 - Oct 15, 2023', amount:'Rs.1,450.00', status:'pending'   },
+      { id: 102, initials:'MT', color:'#3a86ff', name:'Marcus Thorne',    vehicle:'Porsche 911',        schedule:'Oct 14 - Oct 19, 2023', amount:'Rs.2,100.00', status:'pending'   },
+      { id: 103, initials:'OB', color:'#27ae60', name:'Oliver Bennett',   vehicle:'Range Rover Sport',  schedule:'Oct 05 - Oct 10, 2023', amount:'Rs.3,200.00', status:'approved'  },
+      { id: 104, initials:'IR', color:'#e74c3c', name:'Isabella Rossi',   vehicle:'Audi RS7',           schedule:'Oct 09 - Oct 13, 2023', amount:'Rs.1,100.00', status:'approved'  },
+      { id: 105, initials:'NS', color:'#f39c12', name:'Noah Smith',       vehicle:'Kinetic Tensile K',  schedule:'Sep 28 - Oct 03, 2023', amount:'Rs.4,500.00', status:'completed' },
+      { id: 106, initials:'MG', color:'#9b59b6', name:'Mia Garcia',       vehicle:'Kinetic O-Sprint',   schedule:'Sep 25 - Sep 27, 2023', amount:'Rs.860.00',  status:'completed' },
+      { id: 107, initials:'EH', color:'#e67e22', name:'Ethan Hunt',       vehicle:'Escalade ESV',       schedule:'Oct 10 - Oct 13, 2023', amount:'Rs.2,800.00', status:'cancelled' },
+      { id: 108, initials:'HV', color:'#1abc9c', name:'Harper Vance',     vehicle:'BMW M8',             schedule:'Oct 05 - Oct 07, 2023', amount:'Rs.1,900.00', status:'cancelled' },
+      { id: 109, initials:'ER', color:'#3498db', name:'Elena Rodriguez',  vehicle:'Lucid Air',          schedule:'Oct 20 - Oct 25, 2023', amount:'Rs.2,400.00', status:'pending'   },
+      { id: 110, initials:'JW', color:'#e74c3c', name:'Jameson Wu',       vehicle:'BMW M4',             schedule:'Oct 18 - Oct 21, 2023', amount:'Rs.1,750.00', status:'pending'   },
+      { id: 111, initials:'LC', color:'#27ae60', name:'Liam Chen',        vehicle:'Kinetic Volt X',     schedule:'Oct 11 - Oct 15, 2023', amount:'Rs.1,250.00', status:'approved'  },
+      { id: 112, initials:'AD', color:'#f39c12', name:'Ava Dubois',       vehicle:'Kinetic E-Core',     schedule:'Oct 15 - Oct 18, 2023', amount:'Rs.1,600.00', status:'approved'  },
+      { id: 113, initials:'LM', color:'#9b59b6', name:'Lucas Müller',     vehicle:'Mercedes-AMG G63',   schedule:'Sep 30 - Sep 23, 2023', amount:'Rs.6,400.00', status:'completed' },
+      { id: 114, initials:'CL', color:'#e67e22', name:'Chloe Lefebvre',   vehicle:'Taycan Turbo S',     schedule:'Sep 15 - Sep 18, 2023', amount:'Rs.3,000.00', status:'completed' },
+      { id: 115, initials:'MR', color:'#6c63ff', name:'Mason Reed',       vehicle:'Range Rover',        schedule:'Oct 11 - Oct 14, 2023', amount:'Rs.1,400.00', status:'cancelled' },
+      { id: 116, initials:'EC', color:'#3a86ff', name:'Evelyn Clarke',    vehicle:'Aether Velocity',    schedule:'Oct 01 - Oct 05, 2023', amount:'Rs.2,250.00', status:'cancelled' }
+    ];
+
+    const statusLabel = { pending:'Pending', approved:'Approved', completed:'Completed', cancelled:'Cancelled' };
+    
+    // Core Application Scope State Tracker Variables
+    let currentFilter = 'all';
+    let vehicleDropdownFilter = 'all';
+    let searchQuery = '';
+    let currentPage = 1;
+    
+    // CHANGED: Increased from 5 to 10 entries per view page
+    const itemsPerPage = 10; 
+
+    // DOM Selection Node Maps
+    const tbody = document.getElementById('bookingsBody');
+    const searchInput = document.getElementById('searchInput');
+    const tabBar = document.getElementById('tabBar');
+    const filterButtonToggle = document.getElementById('filterButtonToggle');
+    const filterPopover = document.getElementById('filterPopover');
+    const filterVehicleSelect = document.getElementById('filterVehicleSelect');
+    
+    // Modal Element Pointers
+    const detailsModalOverlay = document.getElementById('detailsModalOverlay');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // Sync metrics dashboard counters dynamically
+    function updateMetrics() {
+      const pendingCount = bookings.filter(b => b.status === 'pending').length;
+      const approvedCount = bookings.filter(b => b.status === 'approved').length;
+      let totalSum = 0;
+      bookings.forEach(b => { if (b.status !== 'cancelled') totalSum += parseFloat(b.amount.replace(/[^0-9.]/g, '')) || 0; });
+      document.getElementById('countPending').textContent = String(pendingCount).padStart(2, '0');
+      document.getElementById('countApproved').textContent = String(approvedCount).padStart(2, '0');
+      document.getElementById('totalEarnings').textContent = 'Rs.' + totalSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Toggle Action dropdown popover submenus
+    function toggleActionDropdown(id, event) {
+      event.stopPropagation();
+      const targetDropdown = document.getElementById(`actions-${id}`);
+      const currentlyOpen = targetDropdown.classList.contains('visible');
+      closeAllPopups();
+      if (!currentlyOpen) targetDropdown.classList.add('visible');
+    }
+
+    function closeAllPopups() {
+      document.querySelectorAll('.action-dropdown-menu').forEach(m => m.classList.remove('visible'));
+    }
+
+    // Change booking status safely
+    function changeStatus(id, targetStatus, event) {
+      event.stopPropagation();
+      const item = bookings.find(b => b.id === id);
+      if (item) { item.status = targetStatus; updateMetrics(); renderTable(); }
+      closeAllPopups();
+    }
+
+    // Modal view panel populator route engine 
+    function openDetailsModal(id) {
+      const item = bookings.find(b => b.id === id);
+      if (!item) return;
+
+      document.getElementById('mBookingId').textContent = `Booking #VN-00${item.id}`;
+      document.getElementById('mVehicleName').textContent = item.vehicle;
+      document.getElementById('mCustName').textContent = item.name;
+      document.getElementById('mSchedule').textContent = item.schedule;
+      document.getElementById('mTotalAmount').textContent = item.amount;
+
+      const badgeContainer = document.getElementById('mBadgeContainer');
+      badgeContainer.innerHTML = `<span class="badge ${item.status}">${statusLabel[item.status]}</span>`;
+
+      detailsModalOverlay.classList.add('open');
+    }
+
+    function closeDetailsModal() { detailsModalOverlay.classList.remove('open'); }
+
+    // Table view model transformation pipeline
+    function renderTable() {
+      const filtered = bookings.filter(item => {
+        const matchesStatus = (currentFilter === 'all' || item.status === currentFilter);
+        const matchesVehicleDropdown = (vehicleDropdownFilter === 'all' || item.vehicle.toLowerCase().includes(vehicleDropdownFilter));
+        const matchesTextSearch = item.name.toLowerCase().includes(searchQuery) || 
+                                  item.vehicle.toLowerCase().includes(searchQuery) || 
+                                  item.schedule.toLowerCase().includes(searchQuery);
+        return matchesStatus && matchesVehicleDropdown && matchesTextSearch;
+      });
+
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * itemsPerPage;
+      const pageItems = filtered.slice(start, start + itemsPerPage);
+
+      tbody.innerHTML = '';
+      if (pageItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#6b7280; padding:30px;">No matching records found.</td></tr>`;
+      } else {
+        pageItems.forEach(b => {
+          const tr = document.createElement('tr');
+          tr.setAttribute('onclick', `openDetailsModal(${b.id})`);
+          tr.innerHTML = `
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background:${b.color}">${b.initials}</div>
+                <div class="cust-name">${b.name}</div>
+              </div>
+            </td>
+            <td><div class="vehicle-name">${b.vehicle}</div></td>
+            <td><div class="schedule-text">${b.schedule}</div></td>
+            <td><div class="amount">${b.amount}</div></td>
+            <td><span class="badge ${b.status}">${statusLabel[b.status]}</span></td>
+            <td>
+              <div class="action-menu-container">
+                <button class="action-trigger-btn" onclick="toggleActionDropdown(${b.id}, event)">⋮</button>
+                <div class="action-dropdown-menu" id="actions-${b.id}">
+                  <button class="action-menu-item" onclick="changeStatus(${b.id}, 'approved', event)">Approve Trip</button>
+                  <button class="action-menu-item" onclick="changeStatus(${b.id}, 'completed', event)">Complete Trip</button>
+                  <button class="action-menu-item danger" onclick="changeStatus(${b.id}, 'cancelled', event)">Cancel Booking</button>
+                </div>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+      document.getElementById('paginationInfo').textContent = totalItems > 0 ? `Showing ${start + 1}-${Math.min(start + itemsPerPage, totalItems)} of ${totalItems} entries` : `Showing 0-0 of 0 entries`;
+      renderPaginationControls(totalPages);
+    }
+
+    // Dynamic Pagination Links Drawer Engine
+    function renderPaginationControls(totalPages) {
+      const wrapper = document.getElementById('paginationButtons');
+      wrapper.innerHTML = '';
+
+      const prev = document.createElement('button');
+      prev.className = `page-control-btn ${currentPage === 1 ? 'disabled' : ''}`;
+      prev.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+      if (currentPage > 1) prev.onclick = (e) => { e.stopPropagation(); currentPage--; renderTable(); };
+      wrapper.appendChild(prev);
+
+      for(let i=1; i<=totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = `page-control-btn ${i === currentPage ? 'active-page' : ''}`;
+        btn.textContent = i;
+        btn.onclick = (e) => { e.stopPropagation(); currentPage = i; renderTable(); };
+        wrapper.appendChild(btn);
+      }
+
+      const next = document.createElement('button');
+      next.className = `page-control-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+      next.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+      if (currentPage < totalPages) next.onclick = (e) => { e.stopPropagation(); currentPage++; renderTable(); };
+      wrapper.appendChild(next);
+    }
+
+    // Operational Event Attachment Registrations
+    tabBar.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBar.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        currentPage = 1; renderTable();
+      });
+    });
+
+    filterButtonToggle.addEventListener('click', (e) => { e.stopPropagation(); filterPopover.classList.toggle('active'); });
+    filterVehicleSelect.addEventListener('change', (e) => { vehicleDropdownFilter = e.target.value.toLowerCase(); currentPage = 1; renderTable(); });
+    searchInput.addEventListener('input', (e) => { searchQuery = e.target.value.toLowerCase().trim(); currentPage = 1; renderTable(); });
+    modalCloseBtn.addEventListener('click', closeDetailsModal);
+    detailsModalOverlay.addEventListener('click', closeDetailsModal);
+    window.addEventListener('click', () => { closeAllPopups(); filterPopover.classList.remove('active'); });
+
+    function handleLogout(e) { if(!confirm("Confirm account signout?")) e.preventDefault(); }
+
+    // Start App Routine
+    updateMetrics();
+    renderTable();
+  </script>
 </body>
 </html>
