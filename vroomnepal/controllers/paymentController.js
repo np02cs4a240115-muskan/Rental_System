@@ -14,11 +14,11 @@ const canViewBookingPayment = (user, booking) =>
   (user.role === 'vendor' && Number(booking.vendor_id) === Number(user.id));
 
 const isFutureExpiry = (value) => {
-  const match = String(value || '').trim().match(/^(\d{2})\/(\d{2})$/);
+  const match = String(value || '').trim().match(/^(\d{2})\/(\d{2}|\d{4})$/);
   if (!match) return false;
 
   const month = Number(match[1]);
-  const year = 2000 + Number(match[2]);
+  const year = match[2].length === 2 ? 2000 + Number(match[2]) : Number(match[2]);
   if (month < 1 || month > 12) return false;
 
   return new Date(year, month, 0, 23, 59, 59, 999) >= new Date();

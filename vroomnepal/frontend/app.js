@@ -51,6 +51,7 @@
     document.querySelectorAll('a, button').forEach(el => {
       if (el.dataset.vroomBound === 'true') return;
       if (el.matches('.confirm-btn, .btn-complete, .btn-book, .reserve-btn')) return;
+      if (el.matches('[data-vroom-skip-route], [type="submit"], #loginBtn, #signupBtn')) return;
       if (el.hasAttribute('onclick')) return;
 
       const existingHref = el.getAttribute('href');

@@ -607,8 +607,8 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="field-label">Expiry (MM/YY)</label>
-          <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5">
+          <label class="field-label">Expiry (MM/YYYY)</label>
+          <input type="text" id="card-expiry" placeholder="MM/YYYY" maxlength="7">
         </div>
         <div class="form-group">
           <label class="field-label">CVV</label>
@@ -766,12 +766,24 @@
     input.value = digitsOnly(input.value).slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
   }
 
+  function formatExpiryInput(input) {
+    const digits = digitsOnly(input.value).slice(0, 6);
+    input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+  }
+
+  function normalizeExpiry(value) {
+    const match = String(value || '').trim().match(/^(\d{2})\/?(\d{2}|\d{4})$/);
+    if (!match) return '';
+    const year = match[2].length === 2 ? `20${match[2]}` : match[2];
+    return `${match[1]}/${year}`;
+  }
+
   function isFutureExpiry(value) {
-    const match = String(value || '').trim().match(/^(\d{2})\/(\d{2})$/);
+    const match = String(value || '').trim().match(/^(\d{2})\/?(\d{2}|\d{4})$/);
     if (!match) return false;
 
     const month = Number(match[1]);
-    const year = 2000 + Number(match[2]);
+    const year = match[2].length === 2 ? 2000 + Number(match[2]) : Number(match[2]);
     if (month < 1 || month > 12) return false;
 
     return new Date(year, month, 0, 23, 59, 59, 999) >= new Date();
@@ -883,7 +895,7 @@
       const cvv = document.getElementById('card-cvv').value.trim();
       const name = document.getElementById('card-name').value.trim();
       if (digitsOnly(cardNum).length < 13 || digitsOnly(cardNum).length > 19) { alert('Please enter a valid Card Number.'); return false; }
-      if (!isFutureExpiry(expiry)) { alert('Please enter a valid future expiration date (MM/YY).'); return false; }
+      if (!isFutureExpiry(expiry)) { alert('Please enter a valid future expiration date (MM/YYYY).'); return false; }
       if (digitsOnly(cvv).length < 3 || digitsOnly(cvv).length > 4) { alert('Please enter a valid CVV.'); return false; }
       if (name.length < 2) { alert('Please enter the cardholder name.'); return false; }
     } else if (activeMethod === 'bank') {
@@ -926,7 +938,7 @@
       ? {
           cardholder_name: document.getElementById('card-name').value.trim(),
           card_last4: digitsOnly(document.getElementById('card-num').value).slice(-4),
-          expiry: document.getElementById('card-expiry').value.trim(),
+          expiry: normalizeExpiry(document.getElementById('card-expiry').value),
         }
       : {
           bank_name: document.getElementById('bank-name').value,
@@ -972,6 +984,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('card-expiry')?.addEventListener('input', event => formatExpiryInput(event.target));
     if (!requireSession()) return;
     await loadBookingSummary();
     await verifyEsewaCallback();

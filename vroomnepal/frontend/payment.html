@@ -681,7 +681,7 @@
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
           <label>Expiry Date</label>
-          <input id="cardExpiry" class="form-input" type="text" placeholder="MM / YY" maxlength="5" />
+          <input id="cardExpiry" class="form-input" type="text" placeholder="MM / YYYY" maxlength="7" />
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label>CVV</label>
@@ -833,11 +833,11 @@
   }
 
   function isFutureExpiry(value) {
-    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2})$/);
+    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2}|\d{4})$/);
     if (!match) return false;
 
     const month = Number(match[1]);
-    const year = 2000 + Number(match[2]);
+    const year = match[2].length === 2 ? 2000 + Number(match[2]) : Number(match[2]);
     if (month < 1 || month > 12) return false;
 
     const expiryEnd = new Date(year, month, 0, 23, 59, 59, 999);
@@ -845,8 +845,15 @@
   }
 
   function normalizeExpiry(value) {
-    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2})$/);
-    return match ? `${match[1]}/${match[2]}` : '';
+    const match = String(value || '').trim().match(/^(\d{2})\s*\/?\s*(\d{2}|\d{4})$/);
+    if (!match) return '';
+    const year = match[2].length === 2 ? `20${match[2]}` : match[2];
+    return `${match[1]}/${year}`;
+  }
+
+  function formatExpiryInput(input) {
+    const digits = digitsOnly(input.value).slice(0, 6);
+    input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
   }
 
   function validateCardDetails() {
@@ -864,7 +871,7 @@
       return null;
     }
     if (!isFutureExpiry(expiry)) {
-      alert('Please enter a valid future expiry date in MM/YY format.');
+      alert('Please enter a valid future expiry date in MM/YYYY format.');
       return null;
     }
     if (cvv.length < 3 || cvv.length > 4) {
@@ -978,6 +985,7 @@
   }
 
   document.querySelector('.btn-complete').addEventListener('click', completePayment);
+  document.getElementById('cardExpiry').addEventListener('input', event => formatExpiryInput(event.target));
   loadPaymentSummary();
 </script>
 <script src="/app.js"></script>
